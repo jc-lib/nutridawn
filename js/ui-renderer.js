@@ -261,15 +261,17 @@ function applyLanguageBindings() {
 function renderOnboardingPills() {
   const isBn = state.lang === 'bn';
 
-  const renderGroup = (mountId, list, activeVal, attrName) => {
+  const renderInlineRow = (mountId, list, activeVal, attrName) => {
     const mount = document.getElementById(mountId);
     if (!mount) return;
     mount.innerHTML = list
       .map((item) => {
-        const isActive = String(activeVal) === String(item.id) ? 'active' : '';
+        const isActive = String(activeVal) === String(item.id);
         const label = isBn ? sanitizeBengali(item.labelBn) : item.labelEn;
         const iconHtml = item.icon ? `<span>${item.icon}</span>` : '';
-        return `<button type="button" data-${attrName}="${item.id}" class="nd-pill-btn ${isActive}">
+        return `<button type="button" data-${attrName}="${item.id}" class="nd-pill-btn ${
+          isActive ? 'active' : ''
+        }">
           ${iconHtml}
           <span>${escapeHtml(label)}</span>
         </button>`;
@@ -277,38 +279,66 @@ function renderOnboardingPills() {
       .join('');
   };
 
-  renderGroup('ageGroupPills', AGE_GROUPS, state.profile.ageGroup, 'age');
-  renderGroup('genderPills', GENDERS, state.profile.gender, 'gender');
-  renderGroup('cuisinePills', CUISINES, state.profile.cuisine, 'cuisine');
-  renderGroup('dietPills', DIET_TYPES, state.profile.dietType, 'diet');
-  renderGroup('prepTimePills', PREP_TIMES, state.profile.maxPrepMinutes, 'prep');
-  renderGroup('conditionPills', HEALTH_CONDITIONS, state.profile.healthCondition, 'condition');
+  const renderDropdownMenuItems = (mountId, list, activeVal, attrName, isTouched) => {
+    const mount = document.getElementById(mountId);
+    if (!mount) return;
+    mount.innerHTML = list
+      .map((item) => {
+        const isSelected = (isTouched || state.hasSavedProfile) && String(activeVal) === String(item.id);
+        const label = isBn ? sanitizeBengali(item.labelBn) : item.labelEn;
+        const btnClasses = isSelected
+          ? 'w-full text-left px-3.5 py-2.5 rounded-xl bg-primary text-white font-semibold text-xs sm:text-sm flex items-center justify-between gap-2 shadow-xs transition-colors'
+          : 'w-full text-left px-3.5 py-2.5 rounded-xl bg-white hover:bg-primary-fixed/60 text-on-surface border border-outline-variant/80 font-medium text-xs sm:text-sm flex items-center justify-between gap-2 transition-colors';
+        return `<button type="button" data-${attrName}="${item.id}" class="${btnClasses}">
+          <span class="leading-snug">${escapeHtml(label)}</span>
+          <span class="shrink-0 text-xs font-bold">${isSelected ? '✓' : '›'}</span>
+        </button>`;
+      })
+      .join('');
+  };
+
+  renderInlineRow('ageGroupPills', AGE_GROUPS, state.profile.ageGroup, 'age');
+  renderInlineRow('genderPills', GENDERS, state.profile.gender, 'gender');
+
+  renderDropdownMenuItems('cuisinePills', CUISINES, state.profile.cuisine, 'cuisine', state.touchedFilters.cuisine);
+  renderDropdownMenuItems('dietPills', DIET_TYPES, state.profile.dietType, 'diet', state.touchedFilters.diet);
+  renderDropdownMenuItems('prepTimePills', PREP_TIMES, state.profile.maxPrepMinutes, 'prep', state.touchedFilters.prep);
+  renderDropdownMenuItems('conditionPills', HEALTH_CONDITIONS, state.profile.healthCondition, 'condition', state.touchedFilters.condition);
 
   const cObj = CUISINES.find((c) => c.id === state.profile.cuisine) || CUISINES[0];
   const dObj = DIET_TYPES.find((d) => d.id === state.profile.dietType) || DIET_TYPES[0];
   const pObj = PREP_TIMES.find((p) => Number(p.id) === Number(state.profile.maxPrepMinutes)) || PREP_TIMES[2];
   const hObj = HEALTH_CONDITIONS.find((h) => h.id === state.profile.healthCondition) || HEALTH_CONDITIONS[0];
 
-  const syncCardValue = (id, touched, obj) => {
-    const el = document.getElementById(id);
-    if (!el || !obj) return;
-    if (touched || state.hasSavedProfile) {
-      el.textContent = isBn ? sanitizeBengali(obj.labelBn) : obj.labelEn;
-      el.classList.remove('hidden');
-    } else {
-      el.textContent = '';
-      el.classList.add('hidden');
+  const syncCardValue = (cardId, summaryId, touched, obj) => {
+    const el = document.getElementById(summaryId);
+    const card = document.getElementById(cardId);
+    const cueEl = card?.querySelector('.nd-select-cue');
+    const hasChosen = touched || state.hasSavedProfile;
+
+    if (el && obj) {
+      if (hasChosen) {
+        el.textContent = isBn ? sanitizeBengali(obj.labelBn) : obj.labelEn;
+        el.classList.remove('hidden');
+      } else {
+        el.textContent = '';
+        el.classList.add('hidden');
+      }
+    }
+
+    if (cueEl) {
+      if (hasChosen) {
+        cueEl.textContent = isBn ? sanitizeBengali('পরিবর্তন') : 'Change';
+      } else {
+        cueEl.textContent = isBn ? sanitizeBengali('বাছুন') : 'Select';
+      }
     }
   };
 
-  syncCardValue('summaryCuisineVal', state.touchedFilters.cuisine, cObj);
-  syncCardValue('summaryDietVal', state.touchedFilters.diet, dObj);
-  syncCardValue('summaryPrepVal', state.touchedFilters.prep, pObj);
-  syncCardValue('summaryConditionVal', state.touchedFilters.condition, hObj);
-
-  document.querySelectorAll('.nd-select-cue').forEach((el) => {
-    el.textContent = isBn ? sanitizeBengali('বাছুন') : 'Select';
-  });
+  syncCardValue('cardDetailsCuisine', 'summaryCuisineVal', state.touchedFilters.cuisine, cObj);
+  syncCardValue('cardDetailsDiet', 'summaryDietVal', state.touchedFilters.diet, dObj);
+  syncCardValue('cardDetailsPrep', 'summaryPrepVal', state.touchedFilters.prep, pObj);
+  syncCardValue('cardDetailsCondition', 'summaryConditionVal', state.touchedFilters.condition, hObj);
 
   updateBaselineNutritionPreview();
 }

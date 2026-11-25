@@ -255,63 +255,63 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5 items-start">
             <!-- Card 1: Cuisine -->
-            <details id="cardDetailsCuisine" class="nd-filter-details rounded-2xl bg-surface-container-low/90 border border-outline-variant/80 p-3.5 group">
-              <summary class="min-h-[52px] flex items-center justify-between gap-2 cursor-pointer list-none select-none">
+            <details id="cardDetailsCuisine" class="nd-filter-details rounded-2xl bg-surface-container-low border border-outline-variant p-3.5 group">
+              <summary class="min-h-[54px] flex items-center justify-between gap-2 cursor-pointer list-none select-none">
                 <div class="min-w-0">
                   <span id="cardTitleCuisine" class="block font-headline-sm text-base text-on-surface leading-snug">Cuisine</span>
-                  <span id="summaryCuisineVal" class="hidden text-xs font-semibold text-primary mt-0.5 truncate"></span>
+                  <span id="summaryCuisineVal" class="hidden text-xs font-bold text-primary mt-0.5 truncate"></span>
                 </div>
                 <span class="px-2.5 py-1 rounded-full bg-white border border-outline-variant text-xs text-primary font-bold flex items-center gap-1 shrink-0 shadow-2xs">
                   <span class="nd-select-cue">Select</span>
                   <span class="inline-block transition-transform group-open:rotate-180">▾</span>
                 </span>
               </summary>
-              <div id="cuisinePills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
+              <div id="cuisinePills" class="flex flex-col gap-2 mt-3 pt-3 border-t border-outline-variant/50"></div>
             </details>
 
             <!-- Card 2: Dietary Preference -->
-            <details id="cardDetailsDiet" class="nd-filter-details rounded-2xl bg-surface-container-low/90 border border-outline-variant/80 p-3.5 group">
-              <summary class="min-h-[52px] flex items-center justify-between gap-2 cursor-pointer list-none select-none">
+            <details id="cardDetailsDiet" class="nd-filter-details rounded-2xl bg-surface-container-low border border-outline-variant p-3.5 group">
+              <summary class="min-h-[54px] flex items-center justify-between gap-2 cursor-pointer list-none select-none">
                 <div class="min-w-0">
                   <span id="cardTitleDiet" class="block font-headline-sm text-base text-on-surface leading-snug">Dietary Preference</span>
-                  <span id="summaryDietVal" class="hidden text-xs font-semibold text-primary mt-0.5 truncate"></span>
+                  <span id="summaryDietVal" class="hidden text-xs font-bold text-primary mt-0.5 truncate"></span>
                 </div>
                 <span class="px-2.5 py-1 rounded-full bg-white border border-outline-variant text-xs text-primary font-bold flex items-center gap-1 shrink-0 shadow-2xs">
                   <span class="nd-select-cue">Select</span>
                   <span class="inline-block transition-transform group-open:rotate-180">▾</span>
                 </span>
               </summary>
-              <div id="dietPills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
+              <div id="dietPills" class="flex flex-col gap-2 mt-3 pt-3 border-t border-outline-variant/50"></div>
             </details>
 
             <!-- Card 3: Max Kitchen Time -->
-            <details id="cardDetailsPrep" class="nd-filter-details rounded-2xl bg-surface-container-low/90 border border-outline-variant/80 p-3.5 group">
-              <summary class="min-h-[52px] flex items-center justify-between gap-2 cursor-pointer list-none select-none">
+            <details id="cardDetailsPrep" class="nd-filter-details rounded-2xl bg-surface-container-low border border-outline-variant p-3.5 group">
+              <summary class="min-h-[54px] flex items-center justify-between gap-2 cursor-pointer list-none select-none">
                 <div class="min-w-0">
                   <span id="cardTitlePrep" class="block font-headline-sm text-base text-on-surface leading-snug">Max Kitchen Time</span>
-                  <span id="summaryPrepVal" class="hidden text-xs font-semibold text-primary mt-0.5 truncate"></span>
+                  <span id="summaryPrepVal" class="hidden text-xs font-bold text-primary mt-0.5 truncate"></span>
                 </div>
                 <span class="px-2.5 py-1 rounded-full bg-white border border-outline-variant text-xs text-primary font-bold flex items-center gap-1 shrink-0 shadow-2xs">
                   <span class="nd-select-cue">Select</span>
                   <span class="inline-block transition-transform group-open:rotate-180">▾</span>
                 </span>
               </summary>
-              <div id="prepTimePills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
+              <div id="prepTimePills" class="flex flex-col gap-2 mt-3 pt-3 border-t border-outline-variant/50"></div>
             </details>
 
             <!-- Card 4: Needs special dietary care -->
-            <details id="cardDetailsCondition" class="nd-filter-details rounded-2xl bg-surface-container-low/90 border border-outline-variant/80 p-3.5 group">
-              <summary class="min-h-[52px] flex items-center justify-between gap-2 cursor-pointer list-none select-none">
+            <details id="cardDetailsCondition" class="nd-filter-details rounded-2xl bg-surface-container-low border border-outline-variant p-3.5 group">
+              <summary class="min-h-[54px] flex items-center justify-between gap-2 cursor-pointer list-none select-none">
                 <div class="min-w-0">
                   <span id="step3PromptText" class="block font-headline-sm text-base text-on-surface leading-snug">Needs special dietary care</span>
-                  <span id="summaryConditionVal" class="hidden text-xs font-semibold text-primary mt-0.5 truncate"></span>
+                  <span id="summaryConditionVal" class="hidden text-xs font-bold text-primary mt-0.5 truncate"></span>
                 </div>
                 <span class="px-2.5 py-1 rounded-full bg-white border border-outline-variant text-xs text-primary font-bold flex items-center gap-1 shrink-0 shadow-2xs">
                   <span class="nd-select-cue">Select</span>
                   <span class="inline-block transition-transform group-open:rotate-180">▾</span>
                 </span>
               </summary>
-              <div id="conditionPills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
+              <div id="conditionPills" class="flex flex-col gap-2 mt-3 pt-3 border-t border-outline-variant/50"></div>
             </details>
           </div>
         </div>

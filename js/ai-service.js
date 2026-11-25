@@ -1,8 +1,8 @@
 /**
  * NutriDawn — AI Breakfast Generation Service
  * Supports: (1) Cloudflare Worker Proxy, (2) Direct BYOK Groq/Gemini, (3) Offline Emergency Fallback
- * Includes Weekend / No-Time-Bound Traditional Classics, WHO/IMA/ICMR-NIN clinical alignment,
- * and Bengali Unicode NFC sanitization.
+ * Includes Realistic 5-Min Express Pan/No-Cook Rules, Weekend / No-Time-Bound Traditional Classics,
+ * WHO/IMA/ICMR-NIN clinical alignment, and Bengali Unicode NFC sanitization.
  * Designed & Created by: Dr. Joydip Chandra, BRSC
  */
 
@@ -62,7 +62,9 @@ function buildPromptPayload(profile, language) {
     genderLabel: genderObj.labelEn,
     baselineNutrients: ageObj.baselineNutrientsEn,
     micronutrientFocus: genderObj.micronutrientFocusEn,
+    cuisineId: cuisineObj.id,
     cuisineLabel: cuisineObj.labelEn,
+    dietId: dietObj.id,
     dietLabel: dietObj.labelEn,
     conditionId: condObj.id,
     maxPrepMinutes: isNoTimeBound ? 0 : parsedPrep || 15,
@@ -84,8 +86,14 @@ function buildInlineSystemPrompt(p, varietySeed = '') {
       ? `STRICTLY FORBIDDEN INGREDIENTS: ${p.strictExclusions.join(', ')}.`
       : 'Use wholesome everyday household ingredients.';
 
-  let timeAndStyleRule = `Each recipe MUST be ready in <= ${p.maxPrepMinutes} minutes.`;
-  if (p.isNoTimeBound) {
+  let timeAndStyleRule = `Each recipe MUST be realistically cookable from scratch in <= ${p.maxPrepMinutes} minutes.`;
+
+  if (p.maxPrepMinutes === 5) {
+    timeAndStyleRule = `REALISTIC 5-MINUTE EXPRESS RULE:
+- Every recipe MUST genuinely take <= 5 minutes total from start to plate.
+- Both fast 3–4 minute stovetop dishes (such as Poached Egg / Dimer Poach on whole-wheat toast, quick Egg Bhurji, pan-toasted Paneer sandwich) AND zero-stove dishes (Doi-Chira, Sattu drink, Sprout Chaat, Chia/Yogurt bowls, Smoothies) are welcome!
+- NEVER include items that take longer than 5 minutes to cook from raw ingredients (such as raw chicken/mutton curries, stuffed parathas, dosa batter cooking, or soaked dal chilla). If Non-Vegetarian is selected at 5 mins, use fast-cooking eggs or pre-cooked shredded chicken/tuna.`;
+  } else if (p.isNoTimeBound) {
     if (p.conditionId === 'none') {
       timeAndStyleRule = `NO TIME BOUND (Weekend / Leisurely Morning, 20–40 mins allowed): Include beloved traditional rolled, stuffed, or slow-cooked breakfast classics matching the chosen cuisine! For Bengali Home-Style, feature classics like Whole-Wheat Atta Luchi with Chholar Dal or Sada Aloor Torkari, Koraishutir Kochuri, or Radhaballabhi (made with wholesome ingredients and balanced sides like curd or salad). For Pan-Indian, feature classics like Stuffed Aloo Paratha with Curd, Bedmi Puri-Sabzi, or Masala Dosa.`;
     } else {
@@ -93,14 +101,14 @@ function buildInlineSystemPrompt(p, varietySeed = '') {
     }
   }
 
-  return `You are NutriDawn's Clinical Culinary Architect. Generate 3 distinct, authentic breakfast options aligned with WHO, IMA, and ICMR-NIN nutritional guidelines.
+  return `You are NutriDawn's Clinical Culinary Architect. Generate 3 distinct, realistic, authentic breakfast options aligned with WHO, IMA, and ICMR-NIN nutritional guidelines.
 Profile: ${p.ageLabel}, ${p.genderLabel} (${p.micronutrientFocus}), Baseline: ${p.baselineNutrients}, Cuisine: ${p.cuisineLabel}, Diet: ${p.dietLabel}, Care Mode: ${p.conditionLabel} (${p.clinicalRule}).
 ${timeAndStyleRule}
 ${exclusions}
 ${langRule}
 ${varietySeed}
 Return ONLY valid JSON:
-{"options":[{"id":"opt-1","categoryTag":"Bengali Heritage","title":"Dish Name","subtitle":"1-line summary","prepMinutes":25,"calories":340,"proteinGrams":14,"carbsGrams":42,"fatGrams":11,"glycemicTag":"Balanced Energy","healthRationale":"Why this fits","photoKeywords":"3 English keywords","ingredients":[{"quantity":"1 cup","displayName":"Whole Wheat Atta","englishSearchQuery":"whole wheat atta","aisle":"Grains & Flours"}],"pantrySwap":{"original":"Whole Wheat Atta","replacement":"Multigrain Atta","impactNote":"Higher fiber"},"steps":["Step 1","Step 2","Step 3","Step 4"]}]}`;
+{"options":[{"id":"opt-1","categoryTag":"Bengali Heritage","title":"Dish Name","subtitle":"1-line summary","prepMinutes":5,"calories":290,"proteinGrams":15,"carbsGrams":34,"fatGrams":8,"glycemicTag":"Balanced Energy","healthRationale":"Why this fits","photoKeywords":"3 English keywords","ingredients":[{"quantity":"2","displayName":"Eggs","englishSearchQuery":"eggs","aisle":"Dairy & Eggs"}],"pantrySwap":{"original":"White Bread","replacement":"Multigrain Toast","impactNote":"Higher fiber"},"steps":["Step 1","Step 2","Step 3"]}]}`;
 }
 
 function parseJsonPayload(rawText) {
@@ -127,10 +135,10 @@ async function fetchViaCloudflareWorker(payload, forceRefresh = false) {
         { role: 'system', content: systemPrompt },
         {
           role: 'user',
-          content: `Generate 3 tailored ${payload.cuisineLabel} (${payload.dietLabel}) breakfast options in valid JSON.`
+          content: `Generate 3 realistic, strictly time-accurate ${payload.cuisineLabel} (${payload.dietLabel}) breakfast options in valid JSON.`
         }
       ],
-      temperature: forceRefresh ? 0.85 : 0.65,
+      temperature: forceRefresh ? 0.8 : 0.55,
       max_tokens: 2600
     })
   });
@@ -172,7 +180,7 @@ async function fetchDirectByok(byok, payload, forceRefresh = false) {
           { role: 'system', content: prompt },
           { role: 'user', content: 'Generate 3 tailored breakfast options JSON.' }
         ],
-        temperature: forceRefresh ? 0.85 : 0.65,
+        temperature: forceRefresh ? 0.8 : 0.55,
         max_tokens: 2600,
         response_format: { type: 'json_object' }
       })
@@ -190,7 +198,7 @@ async function fetchDirectByok(byok, payload, forceRefresh = false) {
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: forceRefresh ? 0.85 : 0.65,
+          temperature: forceRefresh ? 0.8 : 0.55,
           maxOutputTokens: 2600,
           responseMimeType: 'application/json'
         }
@@ -452,7 +460,11 @@ export async function generateBreakfastOptions(profile, language = 'en', forceRe
         .slice(0, 3)
         .map((opt, idx) =>
           sanitizeRecipeObject(
-            { id: `${opt.id || `opt-${idx + 1}`}-${Date.now()}-${idx}`, ...opt },
+            {
+              id: `${opt.id || `opt-${idx + 1}`}-${Date.now()}-${idx}`,
+              ...opt,
+              prepMinutes: payload.maxPrepMinutes === 5 ? 5 : opt.prepMinutes
+            },
             language
           )
         );

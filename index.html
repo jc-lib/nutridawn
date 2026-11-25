@@ -62,55 +62,55 @@
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed">
 
-  <!-- 1. Bright Sunrise Top Header Banner -->
+  <!-- 1. Bright Sunrise Top Header Banner (Responsive Multi-Device Height & 3.5x Larger Logo) -->
   <header class="sticky top-0 left-0 w-full z-40 nd-sunrise-header no-print">
-    <div class="h-20 max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between gap-3">
-      <!-- Brand Logo (Uses Your Exact Shared Logo in assets/nutridawn-logo.png) -->
-      <a href="#studio-top" class="flex items-center gap-3 group">
-        <div class="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-md border-2 border-amber-200 overflow-hidden shrink-0">
+    <div class="min-h-[84px] md:min-h-[112px] max-w-[1440px] mx-auto px-4 md:px-8 py-2.5 flex items-center justify-between gap-3 md:gap-6">
+      <!-- Brand Logo (64px Mobile / 96px Desktop) -->
+      <a href="#studio-top" class="flex items-center gap-3.5 md:gap-5 group shrink-0">
+        <div class="w-16 h-16 md:w-24 md:h-24 rounded-full bg-white flex items-center justify-center shadow-lg border-2 md:border-[3px] border-amber-200 overflow-hidden shrink-0 transition-transform duration-200 group-hover:scale-105">
           <img
             src="assets/nutridawn-logo.png"
             alt="NutriDawn Logo"
-            class="w-full h-full object-contain p-0.5"
+            class="w-full h-full object-cover"
           />
         </div>
         <div class="flex flex-col">
           <div class="flex items-center gap-2">
-            <span class="font-headline-md text-2xl md:text-3xl tracking-wide text-white leading-none">NutriDawn</span>
-            <span class="px-2.5 py-0.5 rounded-full bg-amber-300 text-red-950 font-label-sm text-[11px] font-bold">Studio</span>
+            <span class="font-headline-md text-2xl sm:text-3xl md:text-4xl tracking-wide text-white leading-none drop-shadow-xs">NutriDawn</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-300 text-red-950 font-label-sm text-xs font-bold shadow-xs">Studio</span>
           </div>
-          <span id="headerTagline" class="font-label-sm text-xs text-amber-100 hidden sm:block">
+          <span id="headerTagline" class="font-label-sm text-xs md:text-sm text-amber-100 mt-1 hidden sm:block">
             Smart, Simple Breakfasts Tailored to Your Health.
           </span>
         </div>
       </a>
 
       <!-- Desktop Anchor Nav -->
-      <nav class="hidden lg:flex items-center gap-1 p-1 bg-white/15 backdrop-blur-md rounded-full border border-white/25">
-        <a href="#onboarding-section" class="px-4 py-1.5 rounded-full bg-white text-primary font-label-md text-xs font-bold shadow-xs">Studio</a>
-        <a href="#options-section" class="px-4 py-1.5 rounded-full text-white hover:bg-white/20 font-label-md text-xs transition-colors">3 Morning Paths</a>
-        <a href="#recipe-detail-section" class="px-4 py-1.5 rounded-full text-white hover:bg-white/20 font-label-md text-xs transition-colors">Active Recipe</a>
-        <button id="openSavedDrawerBtnDesktop" type="button" class="px-4 py-1.5 rounded-full text-white hover:bg-white/20 font-label-md text-xs transition-colors flex items-center gap-1.5">
+      <nav class="hidden lg:flex items-center gap-1.5 p-1.5 bg-white/15 backdrop-blur-md rounded-full border border-white/25">
+        <a href="#onboarding-section" class="px-4 py-2 rounded-full bg-white text-primary font-label-md text-xs md:text-sm font-bold shadow-xs">Studio</a>
+        <a href="#options-section" class="px-4 py-2 rounded-full text-white hover:bg-white/20 font-label-md text-xs md:text-sm transition-colors">3 Morning Paths</a>
+        <a href="#recipe-detail-section" class="px-4 py-2 rounded-full text-white hover:bg-white/20 font-label-md text-xs md:text-sm transition-colors">Active Recipe</a>
+        <button id="openSavedDrawerBtnDesktop" type="button" class="px-4 py-2 rounded-full text-white hover:bg-white/20 font-label-md text-xs md:text-sm transition-colors flex items-center gap-1.5">
           <span>Saved</span>
-          <span id="savedCountBadgeDesktop" class="px-1.5 py-0.2 rounded-full bg-amber-300 text-red-950 font-bold text-[11px]">0</span>
+          <span id="savedCountBadgeDesktop" class="px-2 py-0.5 rounded-full bg-amber-300 text-red-950 font-bold text-xs">0</span>
         </button>
       </nav>
 
       <!-- Language Switcher (EN | বাংলা) + Basket Button + Optional Settings -->
-      <div class="flex items-center gap-2">
-        <button id="openBasketBtnHeader" type="button" class="px-3 py-1.5 rounded-full bg-amber-300 hover:bg-amber-200 text-red-950 font-label-sm text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all">
+      <div class="flex items-center gap-2 md:gap-3">
+        <button id="openBasketBtnHeader" type="button" class="px-3 md:px-4 py-2 rounded-full bg-amber-300 hover:bg-amber-200 text-red-950 font-label-sm text-xs md:text-sm font-bold flex items-center gap-1.5 shadow-sm transition-all">
           <span>🧺</span>
           <span class="hidden sm:inline" id="headerBasketLabel">Basket</span>
-          <span id="headerBasketCount" class="px-1.5 py-0.2 rounded-full bg-primary text-white text-[11px]">0</span>
+          <span id="headerBasketCount" class="px-1.5 py-0.2 rounded-full bg-primary text-white text-xs">0</span>
         </button>
 
-        <div class="flex items-center bg-white/20 border border-white/35 rounded-full p-0.5" role="group" aria-label="Language Switch">
-          <button id="langEnBtn" type="button" class="px-3 py-1 rounded-full bg-white text-primary font-label-sm text-xs font-bold shadow-xs transition-all">EN</button>
-          <button id="langBnBtn" type="button" class="px-3 py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-xs transition-all">বাংলা</button>
+        <div class="flex items-center bg-white/20 border border-white/35 rounded-full p-0.5 md:p-1" role="group" aria-label="Language Switch">
+          <button id="langEnBtn" type="button" class="px-3 md:px-3.5 py-1 md:py-1.5 rounded-full bg-white text-primary font-label-sm text-xs md:text-sm font-bold shadow-xs transition-all">EN</button>
+          <button id="langBnBtn" type="button" class="px-3 md:px-3.5 py-1 md:py-1.5 rounded-full text-white hover:bg-white/15 font-label-sm text-xs md:text-sm transition-all">বাংলা</button>
         </div>
 
-        <button id="toggleByokBtn" type="button" title="Optional Personal Key Settings" class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 border border-white/35 text-white flex items-center justify-center transition-colors">
-          <svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+        <button id="toggleByokBtn" type="button" title="Optional Personal Key Settings" class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 border border-white/35 text-white flex items-center justify-center transition-colors">
+          <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
         </button>
       </div>
     </div>
@@ -216,6 +216,7 @@
       </div>
 
       <div class="nd-editorial-card p-5 md:p-8 space-y-7">
+        <!-- Step A: Life Stage & Gender -->
         <div>
           <h2 id="step1PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface mb-1">
             Who are we preparing breakfast for today?
@@ -233,36 +234,45 @@
           </div>
         </div>
 
+        <!-- Step B & C Unified: 4-Column Meal Style & Extra Care Grid -->
         <div class="pt-5 border-t border-outline-variant/50">
-          <h2 id="step2PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface mb-3">
-            Which flavors and kitchen style do you enjoy in the morning?
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <span class="block font-label-sm text-xs text-secondary mb-2">Cuisine Tradition</span>
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-4">
+            <h2 id="step2PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface">
+              Customize flavors, prep time &amp; wellness care
+            </h2>
+            <p id="step3SubpromptText" class="font-body-sm text-xs md:text-sm text-on-surface-variant">
+              Aligned with WHO, IMA &amp; ICMR-NIN dietary standards
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <!-- Column 1: Cuisine Tradition -->
+            <div class="p-3.5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/60">
+              <span class="block font-label-sm text-xs text-secondary uppercase tracking-wider mb-2">1. Cuisine Tradition</span>
               <div id="cuisinePills" class="flex flex-wrap gap-1.5"></div>
             </div>
-            <div>
-              <span class="block font-label-sm text-xs text-secondary mb-2">Dietary Preference</span>
+
+            <!-- Column 2: Dietary Preference -->
+            <div class="p-3.5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/60">
+              <span class="block font-label-sm text-xs text-secondary uppercase tracking-wider mb-2">2. Dietary Preference</span>
               <div id="dietPills" class="flex flex-wrap gap-1.5"></div>
             </div>
-            <div>
-              <span class="block font-label-sm text-xs text-secondary mb-2">Maximum Kitchen Time</span>
+
+            <!-- Column 3: Maximum Kitchen Time -->
+            <div class="p-3.5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/60">
+              <span class="block font-label-sm text-xs text-secondary uppercase tracking-wider mb-2">3. Max Kitchen Time</span>
               <div id="prepTimePills" class="flex flex-wrap gap-1.5"></div>
+            </div>
+
+            <!-- Column 4: Extra Care Focus -->
+            <div class="p-3.5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/60">
+              <span id="step3PromptText" class="block font-label-sm text-xs text-primary uppercase tracking-wider mb-2">4. Extra Care (Optional)</span>
+              <div id="conditionPills" class="flex flex-wrap gap-1.5"></div>
             </div>
           </div>
         </div>
 
-        <div class="pt-5 border-t border-outline-variant/50">
-          <h2 id="step3PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface mb-1">
-            Is there anything your body needs extra care with right now?
-          </h2>
-          <p id="step3SubpromptText" class="font-body-sm text-sm text-on-surface-variant mb-3">
-            Aligned with WHO, IMA &amp; ICMR-NIN dietary standards — optional if you simply want everyday wellness.
-          </p>
-          <div id="conditionPills" class="flex flex-wrap gap-2"></div>
-        </div>
-
+        <!-- Primary Action Bar -->
         <div class="pt-5 border-t border-outline-variant/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex items-center gap-2 text-on-surface-variant">
             <span class="text-secondary text-sm">🔒</span>

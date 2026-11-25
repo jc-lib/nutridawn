@@ -15,13 +15,11 @@ export const APP_CONFIG = Object.freeze({
     language: 'nutridawn_lang_v1'
   },
   api: {
-    // Update this URL in Step 6 once your Cloudflare Worker is deployed
-    workerUrl: 'https://nutridawn-proxy.your-subdomain.workers.dev',
-    defaultGroqModel: 'openai/gpt-oss-20b',
+    workerUrl: 'https://nutridawn-api.clbrsnc.workers.dev',
+    defaultGroqModel: 'openai/gpt-oss-120b',
     fallbackGeminiModel: 'gemini-2.5-flash',
     maxPrepMinutes: 15
   }
-});
 
 /**
  * 1. Life Stages (Age Groups) with Baseline Nutritional Priorities

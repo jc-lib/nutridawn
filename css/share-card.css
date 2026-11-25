@@ -1,111 +1,234 @@
-/**
- * NutriDawn — Colorful Shareable Recipe Poster & Print Stylesheet
- * Styled in Kitchen Editorial Palette with Bengali Juktakkhor Protection
+/* NutriDawn — Shareable Recipe Poster & Print Card Styling
  * Designed & Created by: Dr. Joydip Chandra, BRSC
  */
 
-/* Off-screen or modal-ready colorful poster container captured by html2canvas */
+.nd-poster-scale-wrapper {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
 .nd-share-poster {
-  width: 680px;
-  max-width: 100%;
-  background: linear-gradient(145deg, #fff8f7 0%, #ffe9e9 55%, #ffdadb 100%);
+  width: 820px;
+  min-width: 820px;
+  max-width: 820px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 32px 34px;
+  border-radius: 26px;
+  background: linear-gradient(155deg, #fff8f7 0%, #ffe9e9 52%, #ffdadb 100%);
   border: 2px solid #e2bfb8;
-  border-radius: 2rem;
-  padding: 2rem;
   color: #350e13;
   box-shadow: 0 18px 40px rgba(53, 14, 19, 0.14);
-  position: relative;
-  overflow: hidden;
+  font-family: 'Noto Sans Bengali', system-ui, -apple-system, sans-serif;
+  transform-origin: top center;
 }
 
-.nd-share-poster-header {
+.nd-poster-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding-bottom: 1rem;
-  margin-bottom: 1.25rem;
-  border-bottom: 1px dashed #e2bfb8;
-}
-
-.nd-share-poster-hero {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 1.25rem;
   align-items: center;
-  background-color: #ffffff;
-  border-radius: 1.5rem;
-  padding: 1rem;
-  border: 1px solid #e2bfb8;
-  margin-bottom: 1.25rem;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1.5px dashed rgba(174, 40, 24, 0.25);
 }
 
-.nd-share-poster-hero img {
-  width: 220px;
-  height: 165px;
+.nd-poster-brand {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ae2818;
+  line-height: 1;
+}
+
+.nd-poster-tagline {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #56423f;
+  margin-top: 4px;
+}
+
+.nd-poster-pill {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: #ffdad4;
+  color: #400100;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.nd-poster-hero {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  align-items: center;
+  margin: 20px 0;
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(226, 191, 184, 0.75);
+}
+
+.nd-poster-hero img {
+  width: 260px;
+  height: 195px;
   object-fit: cover;
-  border-radius: 1rem;
+  border-radius: 16px;
+  display: block;
 }
 
-.nd-share-macro-strip {
+.nd-poster-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: #f4d9ff;
+  color: #30004b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.nd-poster-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #350e13;
+  margin: 0 0 8px 0;
+}
+
+.nd-poster-rationale {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #56423f;
+  margin: 0;
+}
+
+.nd-poster-macros {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.6rem;
-  margin-bottom: 1.25rem;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.nd-share-macro-box {
-  background-color: #ffffff;
-  border: 1px solid #e2bfb8;
-  border-radius: 1rem;
-  padding: 0.6rem 0.5rem;
+.nd-macro-box {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 16px;
+  padding: 12px 10px;
   text-align: center;
+  border: 1px solid rgba(226, 191, 184, 0.65);
 }
 
-.nd-share-poster-body {
-  display: grid;
-  grid-template-columns: 1fr 1.25fr;
-  gap: 1rem;
-  background-color: #ffffff;
-  border-radius: 1.5rem;
-  padding: 1.25rem;
-  border: 1px solid #e2bfb8;
-  margin-bottom: 1.25rem;
+.nd-macro-val {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ae2818;
+  line-height: 1.1;
 }
 
-.nd-share-poster-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.nd-macro-lbl {
   font-size: 0.78rem;
-  color: #5a413c;
-  padding-top: 0.75rem;
-  border-top: 1px solid #e2bfb8;
+  font-weight: 600;
+  color: #56423f;
 }
 
-/* Protect Bengali Juktakkhor inside html2canvas PNG capture */
-html[lang="bn"] .nd-share-poster,
-html[lang="bn"] .nd-share-poster * {
-  font-family: 'Noto Sans Bengali', sans-serif !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
+.nd-poster-body {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  padding: 20px 22px;
+  border-radius: 22px;
+  border: 1px solid rgba(226, 191, 184, 0.75);
 }
 
-/* Clean Print Media Rule */
+.nd-poster-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a33948;
+  margin: 0 0 12px 0;
+}
+
+.nd-poster-ing-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nd-poster-ing-list li {
+  font-size: 0.88rem;
+  padding: 6px 0;
+  border-bottom: 1px dotted #e2bfb8;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.nd-poster-ing-list li span:first-child {
+  font-weight: 600;
+  color: #2d0b10;
+}
+
+.nd-poster-ing-list li span:last-child {
+  font-weight: 700;
+  color: #ae2818;
+  white-space: nowrap;
+}
+
+.nd-poster-steps-list {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.nd-poster-steps-list li {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin-bottom: 9px;
+  color: #350e13;
+}
+
+.nd-poster-footer {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(174, 40, 24, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #56423f;
+}
+
+.nd-poster-attribution {
+  font-weight: 700;
+  color: #ae2818;
+}
+
 @media print {
-  header,
-  nav,
-  .no-print {
-    display: none !important;
+  body * {
+    visibility: hidden !important;
   }
-
-  body {
-    background: #ffffff !important;
-    padding: 0 !important;
+  #ndSharePoster,
+  #ndSharePoster * {
+    visibility: visible !important;
   }
-
-  .nd-share-poster {
-    box-shadow: none !important;
-    border: 1px solid #cccccc !important;
+  #ndSharePoster {
+    position: fixed;
+    left: 0;
+    top: 0;
     width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
 }

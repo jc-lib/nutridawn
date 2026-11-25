@@ -1,132 +1,141 @@
 /**
- * NutriDawn — Colorful Shareable Recipe Poster & PNG Exporter
- * Generates a high-contrast Kitchen Editorial recipe card and exports it via html2canvas.
+ * NutriDawn — Colorful Shareable Recipe Poster & Print Exporter
+ * Uses html2canvas for high-resolution PNG export at fixed 820px editorial layout
+ * with responsive viewport scaling for mobile preview.
  * Designed & Created by: Dr. Joydip Chandra, BRSC
  */
 
 import { APP_CONFIG } from './config.js';
-import { sanitizeBengali } from './i18n-bn.js';
+import { sanitizeBengali, t } from './i18n-bn.js';
 import { buildEditorialFallbackSvg } from './media-service.js';
 
-function escapeHtml(text) {
-  return String(text || '')
+function escapeHtml(str) {
+  return String(str || '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
 
-/**
- * Renders the colorful shareable poster markup inside the modal mount point.
- */
+function fitPosterPreviewToViewport(mountEl) {
+  if (!mountEl) return;
+  const wrapper = mountEl.querySelector('.nd-poster-scale-wrapper');
+  const poster = mountEl.querySelector('#ndSharePoster');
+  if (!wrapper || !poster) return;
+
+  const availableWidth = mountEl.clientWidth || Math.max(280, window.innerWidth - 56);
+  const posterWidth = 820;
+
+  if (availableWidth < posterWidth) {
+    const scale = Math.max(0.32, availableWidth / posterWidth);
+    poster.style.transform = `scale(${scale})`;
+    // Adjust wrapper height so there is no empty whitespace below the scaled card
+    requestAnimationFrame(() => {
+      const naturalHeight = poster.offsetHeight || 720;
+      wrapper.style.height = `${Math.ceil(naturalHeight * scale)}px`;
+    });
+  } else {
+    poster.style.transform = 'none';
+    wrapper.style.height = 'auto';
+  }
+}
+
 export function renderSharePoster(mountEl, recipe, imageUrl, lang = 'en') {
   if (!mountEl || !recipe) return;
 
   const isBn = lang === 'bn';
-  const formatText = (val) => escapeHtml(isBn ? sanitizeBengali(val) : val);
+  const fmt = (val) => escapeHtml(isBn ? sanitizeBengali(val) : val);
   const safeImg = imageUrl || buildEditorialFallbackSvg(recipe.title);
 
   const ingredientsHtml = (recipe.ingredients || [])
     .map(
       (ing) => `
-      <li style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed #e2bfb8;font-size:12.5px;">
-        <span style="font-weight:600;color:#350e13;">${formatText(ing.displayName)}</span>
-        <span style="color:#ae2818;font-weight:700;white-space:nowrap;">${formatText(ing.quantity)}</span>
+      <li>
+        <span>${fmt(ing.displayName)}</span>
+        <span>${fmt(ing.quantity)}</span>
       </li>`
     )
     .join('');
 
   const stepsHtml = (recipe.steps || [])
-    .map(
-      (step, idx) => `
-      <li style="margin-bottom:6px;font-size:12.5px;line-height:1.5;color:#350e13;">
-        <strong style="color:#ae2818;">${idx + 1}.</strong> ${formatText(step)}
-      </li>`
-    )
+    .map((step) => `<li>${fmt(step)}</li>`)
     .join('');
 
   mountEl.innerHTML = `
-    <div id="ndSharePosterCard" class="nd-share-poster">
-      <div class="nd-share-poster-header">
-        <div>
-          <div style="font-size:24px;font-weight:800;color:#ae2818;letter-spacing:0.03em;line-height:1.1;">
-            NutriDawn
+    <div class="nd-poster-scale-wrapper">
+      <div id="ndSharePoster" class="nd-share-poster">
+        <div class="nd-poster-header">
+          <div>
+            <div class="nd-poster-brand">NutriDawn</div>
+            <div class="nd-poster-tagline">${fmt(t(lang, 'tagline'))}</div>
           </div>
-          <div style="font-size:11.5px;color:#a33948;font-weight:600;">
-            ${formatText(isBn ? APP_CONFIG.taglineBn : APP_CONFIG.taglineEn)}
+          <div class="nd-poster-pill">
+            ${fmt(recipe.categoryTag)} • ${recipe.prepMinutes}m
           </div>
         </div>
-        <span style="background:#ffdad4;color:#400100;padding:4px 12px;border-radius:9999px;font-size:11px;font-weight:700;">
-          ${formatText(recipe.categoryTag || 'Morning Studio')} • ${recipe.prepMinutes}m
-        </span>
-      </div>
 
-      <div class="nd-share-poster-hero">
-        <img src="${safeImg}" crossorigin="anonymous" alt="${formatText(recipe.title)}" onerror="this.src='${buildEditorialFallbackSvg(recipe.title)}'" />
-        <div>
-          <span style="display:inline-block;background:#f4d9ff;color:#30004b;padding:2px 10px;border-radius:9999px;font-size:11px;font-weight:700;margin-bottom:6px;">
-            ${formatText(recipe.glycemicTag || 'Balanced Nutrition')}
-          </span>
-          <h4 style="font-size:21px;font-weight:800;color:#350e13;margin:0 0 6px 0;line-height:1.25;">
-            ${formatText(recipe.title)}
-          </h4>
-          <p style="font-size:12.5px;color:#5a413c;margin:0;line-height:1.45;">
-            ${formatText(recipe.healthRationale || recipe.subtitle)}
-          </p>
+        <div class="nd-poster-hero">
+          <img
+            src="${safeImg}"
+            alt="${fmt(recipe.title)}"
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='${buildEditorialFallbackSvg(recipe.title)}';"
+          />
+          <div>
+            <span class="nd-poster-badge">${fmt(recipe.glycemicTag)}</span>
+            <h2 class="nd-poster-title">${fmt(recipe.title)}</h2>
+            <p class="nd-poster-rationale">${fmt(recipe.healthRationale)}</p>
+          </div>
         </div>
-      </div>
 
-      <div class="nd-share-macro-strip">
-        <div class="nd-share-macro-box">
-          <div style="font-size:16px;font-weight:800;color:#ae2818;">${recipe.calories || 280}</div>
-          <div style="font-size:10.5px;color:#5a413c;font-weight:600;">${isBn ? 'ক্যালোরি (Kcal)' : 'Calories'}</div>
+        <div class="nd-poster-macros">
+          <div class="nd-macro-box">
+            <span class="nd-macro-val">${recipe.calories}</span>
+            <span class="nd-macro-lbl">${isBn ? 'ক্যালোরি (Kcal)' : 'Calories'}</span>
+          </div>
+          <div class="nd-macro-box">
+            <span class="nd-macro-val">${recipe.proteinGrams}g</span>
+            <span class="nd-macro-lbl">${isBn ? 'প্রোটিন' : 'Protein'}</span>
+          </div>
+          <div class="nd-macro-box">
+            <span class="nd-macro-val">${recipe.carbsGrams}g</span>
+            <span class="nd-macro-lbl">${isBn ? 'শর্করা (Carbs)' : 'Carbs'}</span>
+          </div>
+          <div class="nd-macro-box">
+            <span class="nd-macro-val">${recipe.fatGrams}g</span>
+            <span class="nd-macro-lbl">${isBn ? 'স্বাস্থ্যকর ফ্যাট' : 'Healthy Fat'}</span>
+          </div>
         </div>
-        <div class="nd-share-macro-box">
-          <div style="font-size:16px;font-weight:800;color:#a33948;">${recipe.proteinGrams || 15}g</div>
-          <div style="font-size:10.5px;color:#5a413c;font-weight:600;">${isBn ? 'প্রোটিন' : 'Protein'}</div>
-        </div>
-        <div class="nd-share-macro-box">
-          <div style="font-size:16px;font-weight:800;color:#7c41a2;">${recipe.carbsGrams || 32}g</div>
-          <div style="font-size:10.5px;color:#5a413c;font-weight:600;">${isBn ? 'শর্করা (Carbs)' : 'Carbs'}</div>
-        </div>
-        <div class="nd-share-macro-box">
-          <div style="font-size:16px;font-weight:800;color:#350e13;">${recipe.fatGrams || 8}g</div>
-          <div style="font-size:10.5px;color:#5a413c;font-weight:600;">${isBn ? 'স্বাস্থ্যকর ফ্যাট' : 'Healthy Fat'}</div>
-        </div>
-      </div>
 
-      <div class="nd-share-poster-body">
-        <div>
-          <h5 style="font-size:13px;font-weight:800;color:#ae2818;margin:0 0 8px 0;text-transform:uppercase;">
-            ${isBn ? 'উপকরণ ও পরিমাণ' : 'Ingredients'}
-          </h5>
-          <ul style="list-style:none;padding:0;margin:0;">
-            ${ingredientsHtml}
-          </ul>
+        <div class="nd-poster-body">
+          <div>
+            <h3 class="nd-poster-section-title">${isBn ? 'উপকরণ ও পরিমাণ' : 'Ingredients'}</h3>
+            <ul class="nd-poster-ing-list">${ingredientsHtml}</ul>
+          </div>
+          <div>
+            <h3 class="nd-poster-section-title">${isBn ? 'সহজ প্রস্তুত প্রণালী' : 'Quick Steps'}</h3>
+            <ol class="nd-poster-steps-list">${stepsHtml}</ol>
+          </div>
         </div>
-        <div>
-          <h5 style="font-size:13px;font-weight:800;color:#ae2818;margin:0 0 8px 0;text-transform:uppercase;">
-            ${isBn ? 'সহজ প্রস্তুত প্রণালী' : 'Quick Steps'}
-          </h5>
-          <ol style="list-style:none;padding:0;margin:0;">
-            ${stepsHtml}
-          </ol>
-        </div>
-      </div>
 
-      <div class="nd-share-poster-footer">
-        <span style="font-weight:700;color:#ae2818;">${escapeHtml(APP_CONFIG.attribution)}</span>
-        <span>${isBn ? 'সাধারণ সুস্বাস্থ্যের জন্য পরামর্শ' : 'General Wellness Nutrition Guide'}</span>
+        <div class="nd-poster-footer">
+          <span class="nd-poster-attribution">${escapeHtml(APP_CONFIG.attribution)}</span>
+          <span>${isBn ? 'সাধারণ সুস্বাস্থ্যের জন্য পরামর্শ' : 'General Wellness Nutrition Guide'}</span>
+        </div>
       </div>
     </div>
   `;
+
+  fitPosterPreviewToViewport(mountEl);
+
+  if (!mountEl._resizeBound) {
+    mountEl._resizeBound = true;
+    window.addEventListener('resize', () => fitPosterPreviewToViewport(mountEl));
+  }
 }
 
-/**
- * Captures #ndSharePosterCard using html2canvas and triggers a PNG download.
- */
-export async function downloadPosterAsPng(dishTitle = 'NutriDawn-Recipe') {
-  const posterEl = document.getElementById('ndSharePosterCard');
+export async function downloadPosterAsPng(recipeTitle = 'nutridawn-recipe') {
+  const posterEl = document.getElementById('ndSharePoster');
   if (!posterEl) return false;
 
   if (typeof window.html2canvas !== 'function') {
@@ -134,23 +143,42 @@ export async function downloadPosterAsPng(dishTitle = 'NutriDawn-Recipe') {
     return false;
   }
 
-  const canvas = await window.html2canvas(posterEl, {
-    scale: 2,
-    useCORS: true,
-    allowTaint: true,
-    backgroundColor: '#fff8f7'
-  });
+  const prevTransform = posterEl.style.transform;
+  const wrapper = posterEl.parentElement;
+  const prevWrapperHeight = wrapper ? wrapper.style.height : '';
 
-  const slug = String(dishTitle)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '') || 'recipe';
+  try {
+    // Temporarily reset mobile preview scaling to full 820px width for crisp PNG capture
+    posterEl.style.transform = 'none';
+    if (wrapper) wrapper.style.height = 'auto';
 
-  const link = document.createElement('a');
-  link.download = `NutriDawn-${slug}.png`;
-  link.href = canvas.toDataURL('image/png');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  return true;
+    const canvas = await window.html2canvas(posterEl, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#fff8f7',
+      width: 820,
+      windowWidth: 960
+    });
+
+    const slug = String(recipeTitle)
+      .toLowerCase()
+      .replace(/[^a-z0-9\u0980-\u09FF]+/g, '-')
+      .replace(/^-|-$/g, '') || 'breakfast-card';
+
+    const link = document.createElement('a');
+    link.download = `NutriDawn-${slug}.png`;
+    link.href = canvas.toDataURL('image/png');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return true;
+  } catch (err) {
+    console.warn('[NutriDawn PNG Export Fallback to Print]:', err);
+    window.print();
+    return false;
+  } finally {
+    posterEl.style.transform = prevTransform;
+    if (wrapper) wrapper.style.height = prevWrapperHeight;
+  }
 }

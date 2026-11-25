@@ -1,7 +1,7 @@
 /**
  * NutriDawn — Main Interactive UI Controller
- * Connects Infinite Dynamic Health Quotes, Onboarding, 3 Morning Paths,
- * Pantry Swaps, Unified Morning Grocery Basket + Quick-Commerce Brand Logos,
+ * Connects Infinite Dynamic Health Quotes, Onboarding, Collapsible Filter Cards,
+ * 3 Morning Paths, Pantry Swaps, Unified Morning Grocery Basket + Quick-Commerce Brand Logos,
  * Mise Cooking Mode, Countdown Timer, Bookmarks, and Share Poster Export.
  * Designed & Created by: Dr. Joydip Chandra, BRSC
  */
@@ -113,7 +113,6 @@ async function loadDynamicHealthQuote(forceRemote = true) {
   const authorEl = document.getElementById('dynamicHealthQuoteAuthor');
   if (!quoteEl || !authorEl) return;
 
-  // Step A: Pick an unseen quote immediately from our clinical bank so there is zero delay
   let seenIndices = [];
   try {
     seenIndices = JSON.parse(localStorage.getItem(SEEN_QUOTES_KEY) || '[]');
@@ -140,7 +139,6 @@ async function loadDynamicHealthQuote(forceRemote = true) {
   state.currentQuote = CLINICAL_WELLNESS_QUOTES[chosenIdx];
   renderCurrentQuote();
 
-  // Step B: In English mode, also attempt a fresh live wisdom quote from free zero-key API so quotes never exhaust
   if (forceRemote && state.lang === 'en' && navigator.onLine !== false) {
     try {
       const controller = new AbortController();
@@ -188,11 +186,11 @@ function applyLanguageBindings() {
   const langBnBtn = document.getElementById('langBnBtn');
   if (langEnBtn && langBnBtn) {
     langEnBtn.className = isBn
-      ? 'px-3 py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-xs transition-all'
-      : 'px-3 py-1 rounded-full bg-white text-primary font-label-sm text-xs font-bold shadow-xs transition-all';
+      ? 'px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-xs md:text-sm transition-all'
+      : 'px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white text-primary font-label-sm text-xs md:text-sm font-bold shadow-xs transition-all';
     langBnBtn.className = isBn
-      ? 'px-3 py-1 rounded-full bg-white text-primary font-label-sm text-xs font-bold shadow-xs transition-all'
-      : 'px-3 py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-xs transition-all';
+      ? 'px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white text-primary font-label-sm text-xs md:text-sm font-bold shadow-xs transition-all'
+      : 'px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-xs md:text-sm transition-all';
   }
 
   const textBindings = {
@@ -200,15 +198,26 @@ function applyLanguageBindings() {
     headerBasketLabel: isBn ? 'ঝুড়ি' : 'Basket',
     returningUserText: t(state.lang, 'savedWelcomeBack'),
     resetSavedProfileBtn: t(state.lang, 'clearPrefsBtn'),
-    heroHeading: t(state.lang, 'welcomeHeading'),
+    heroHeading: isBn
+      ? sanitizeBengali('সুপ্রভাত! চলুন এমন একটি সকালের জলখাবার পরিকল্পনা করি যা আপনার শরীর ও মনের যত্ন নেবে।')
+      : 'Good morning! Let’s plan a breakfast that feels kind to your health & mind.',
     heroSubtext: t(state.lang, 'welcomeSubtext'),
     step1PromptText: t(state.lang, 'step1Prompt'),
-    step1SubpromptText: t(state.lang, 'step1Subprompt'),
-    step2PromptText: t(state.lang, 'step2Prompt'),
-    step3PromptText: t(state.lang, 'step3Prompt'),
+    step1SubpromptText: isBn
+      ? sanitizeBengali('লিঙ্গ ও বয়স বেছে নিন — আমরা প্রয়োজনীয় ভিটামিন, প্রোটিন ও শক্তির ভারসাম্য ঠিক রাখব।')
+      : 'Select gender and life stage — we automatically balance essential vitamins, protein, and energy.',
+    step2PromptText: isBn
+      ? sanitizeBengali('স্বাদ, রান্নার সময় ও বিশেষ স্বাস্থ্য যত্ন বাছুন')
+      : 'Customize flavors, prep time & wellness care',
+    step3SubpromptText: isBn
+      ? sanitizeBengali('বিকল্প দেখতে বা পরিবর্তন করতে নিচের যেকোনো কার্ডে ট্যাপ করুন')
+      : 'Tap any card below to select or change options',
+    step3PromptText: isBn ? sanitizeBengali('৪. বিশেষ যত্ন') : '4. Extra Care',
     privacyNoteText: t(state.lang, 'privacyNote'),
     generateIdeasBtnLabel: t(state.lang, 'generateOptionsBtn'),
-    loadingText: t(state.lang, 'generatingLoader'),
+    loadingText: isBn
+      ? sanitizeBengali('আপনার জন্য ৩টি পুষ্টিকর ও সহজ সকালের জলখাবার সাজানো হচ্ছে...')
+      : 'Curating 3 wholesome, easy-to-cook morning recipes for you...',
     optionsTitle: t(state.lang, 'optionsSectionTitle'),
     optionsSubtitle: isBn
       ? 'যেকোনো একটি বিকল্প বেছে নিন — ধাপে ধাপে রান্নার নিয়ম ও গ্রোসারি ঝুড়ি দেখতে পাবেন।'
@@ -238,7 +247,7 @@ function applyLanguageBindings() {
 }
 
 /**
- * 3. Render Gentle Onboarding Pill Selectors
+ * 3. Render Gentle Onboarding Pill Selectors & Collapsible Card Summaries
  */
 function renderOnboardingPills() {
   const isBn = state.lang === 'bn';
@@ -266,7 +275,7 @@ function renderOnboardingPills() {
   renderGroup('prepTimePills', PREP_TIMES, state.profile.maxPrepMinutes, 'prep');
   renderGroup('conditionPills', HEALTH_CONDITIONS, state.profile.healthCondition, 'condition');
 
-const cObj = CUISINES.find((c) => c.id === state.profile.cuisine) || CUISINES[0];
+  const cObj = CUISINES.find((c) => c.id === state.profile.cuisine) || CUISINES[0];
   const dObj = DIET_TYPES.find((d) => d.id === state.profile.dietType) || DIET_TYPES[0];
   const pObj = PREP_TIMES.find((p) => Number(p.id) === Number(state.profile.maxPrepMinutes)) || PREP_TIMES[2];
   const hObj = HEALTH_CONDITIONS.find((h) => h.id === state.profile.healthCondition) || HEALTH_CONDITIONS[0];
@@ -279,6 +288,11 @@ const cObj = CUISINES.find((c) => c.id === state.profile.cuisine) || CUISINES[0]
   setSum('summaryDietVal', dObj);
   setSum('summaryPrepVal', pObj);
   setSum('summaryConditionVal', hObj);
+
+  document.querySelectorAll('.nd-select-cue').forEach((el) => {
+    el.textContent = isBn ? sanitizeBengali('বাছুন') : 'Select';
+  });
+
   updateBaselineNutritionPreview();
 }
 
@@ -321,13 +335,13 @@ async function handleGenerateOptions(forceRefresh = false) {
   if (optionsSec) optionsSec.classList.add('hidden');
   if (recipeSec) recipeSec.classList.add('hidden');
 
-  const { options, source } = await generateBreakfastOptions(state.profile, state.lang, forceRefresh);
+  const { options } = await generateBreakfastOptions(state.profile, state.lang, forceRefresh);
   state.options = options;
 
   if (loadingSec) loadingSec.classList.add('hidden');
 
   if (offlineBanner) {
-    if (source === 'curated-fallback' || source === 'curated-local') {
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
       offlineBanner.classList.remove('hidden');
     } else {
       offlineBanner.classList.add('hidden');
@@ -340,7 +354,6 @@ async function handleGenerateOptions(forceRefresh = false) {
     optionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // Hydrate each dish photo independently from Wikimedia Commons / Openverse
   options.forEach(async (opt) => {
     const media = await resolveDishImage(opt.photoKeywords, opt.title);
     state.resolvedImages.set(opt.id, media);
@@ -599,7 +612,6 @@ function openBasketModal() {
     state.basketItems[0]?.englishSearchQuery || 'healthy breakfast groceries'
   );
 
-  // Quick-Commerce Partner Brand Logos with Live Cart Item Count Badges
   const partners = [
     {
       name: 'Blinkit',
@@ -1077,14 +1089,14 @@ function initApp() {
       const key = document.getElementById('byokKeyInput')?.value || '';
       ByokStore.save(prov, key);
       document.getElementById('byokDrawer')?.classList.add('hidden');
-      showToast('AI Engine preference saved locally.');
+      showToast('Recipe engine preference saved locally.');
       return;
     }
     if (target.id === 'clearByokBtn') {
       ByokStore.clear();
       if (providerSel) providerSel.value = 'proxy';
       if (keyInp) keyInp.value = '';
-      showToast('Reset to default studio proxy.');
+      showToast('Reset to default studio engine.');
       return;
     }
 

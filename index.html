@@ -62,21 +62,21 @@
 </head>
 <body class="bg-background text-on-surface min-h-screen flex flex-col overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
 
-  <!-- 1. Bright Sunrise Top Header Banner (Zero Mobile Overflow + Edge-to-Edge Circular Logo) -->
+  <!-- 1. Bright Sunrise Top Header Banner (Full Brand Name + Mobile A/অ Toggle + Minimalist Settings) -->
   <header class="sticky top-0 left-0 w-full z-40 nd-sunrise-header no-print">
-    <div class="min-h-[76px] md:min-h-[108px] max-w-[1440px] mx-auto px-2.5 sm:px-4 md:px-8 py-2 flex items-center justify-between gap-1.5 sm:gap-3 md:gap-5">
-      <!-- Brand Logo (Cropped to Fill Circle Edge-to-Edge Without White Rim) -->
-      <a href="#studio-top" class="flex items-center gap-2 sm:gap-3.5 md:gap-4 group min-w-0">
-        <div class="w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 rounded-full bg-white shadow-lg border-2 md:border-[3px] border-amber-200 overflow-hidden shrink-0 transition-transform duration-200 group-hover:scale-105">
+    <div class="min-h-[72px] md:min-h-[108px] max-w-[1440px] mx-auto px-2.5 sm:px-4 md:px-8 py-2 flex items-center justify-between gap-1.5 sm:gap-3 md:gap-5">
+      <!-- Brand Logo + Full Unclipped NutriDawn Name -->
+      <a href="#studio-top" class="flex items-center gap-2 sm:gap-3.5 md:gap-4 group shrink-0">
+        <div class="w-11 h-11 sm:w-16 sm:h-16 md:w-24 md:h-24 rounded-full bg-white shadow-lg border-2 md:border-[3px] border-amber-200 overflow-hidden shrink-0 transition-transform duration-200 group-hover:scale-105">
           <img
             src="assets/nutridawn-logo.png"
             alt="NutriDawn Logo"
             class="w-full h-full object-cover scale-125"
           />
         </div>
-        <div class="flex flex-col min-w-0">
+        <div class="flex flex-col">
           <div class="flex items-center gap-1.5 sm:gap-2">
-            <span class="font-headline-md text-xl sm:text-3xl md:text-4xl tracking-wide text-white leading-none truncate">NutriDawn</span>
+            <span class="font-headline-md text-lg sm:text-3xl md:text-4xl tracking-normal sm:tracking-wide text-white leading-none whitespace-nowrap">NutriDawn</span>
             <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-amber-300 text-red-950 font-label-sm text-xs font-bold shadow-xs">Studio</span>
           </div>
           <span id="headerTagline" class="font-label-sm text-xs md:text-sm text-amber-100 mt-1 hidden md:block">
@@ -96,21 +96,27 @@
         </button>
       </nav>
 
-      <!-- Language Switcher (EN | বাংলা) + Basket Button + Settings (Fits 360px Mobile Screens) -->
+      <!-- Language Switcher (A | অ on Mobile, EN | বাংলা on Desktop) + Basket + Minimalist Settings -->
       <div class="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-        <button id="openBasketBtnHeader" type="button" class="px-2 sm:px-3.5 py-1.5 md:py-2 rounded-full bg-amber-300 hover:bg-amber-200 text-red-950 font-label-sm text-xs md:text-sm font-bold flex items-center gap-1 shadow-sm transition-all">
+        <button id="openBasketBtnHeader" type="button" class="px-2 sm:px-3.5 py-1 sm:py-1.5 md:py-2 rounded-full bg-amber-300 hover:bg-amber-200 text-red-950 font-label-sm text-xs md:text-sm font-bold flex items-center gap-1 shadow-sm transition-all">
           <span>🧺</span>
           <span class="hidden sm:inline" id="headerBasketLabel">Basket</span>
           <span id="headerBasketCount" class="px-1.5 py-0.2 rounded-full bg-primary text-white text-[11px] md:text-xs">0</span>
         </button>
 
         <div class="flex items-center bg-white/20 border border-white/35 rounded-full p-0.5 md:p-1" role="group" aria-label="Language Switch">
-          <button id="langEnBtn" type="button" class="px-2 sm:px-3 py-1 rounded-full bg-white text-primary font-label-sm text-[11px] sm:text-xs md:text-sm font-bold shadow-xs transition-all">EN</button>
-          <button id="langBnBtn" type="button" class="px-2 sm:px-3 py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-[11px] sm:text-xs md:text-sm transition-all">বাংলা</button>
+          <button id="langEnBtn" type="button" class="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white text-primary font-label-sm text-xs md:text-sm font-bold shadow-xs transition-all">
+            <span class="sm:hidden">A</span>
+            <span class="hidden sm:inline">EN</span>
+          </button>
+          <button id="langBnBtn" type="button" class="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-xs md:text-sm transition-all">
+            <span class="sm:hidden">অ</span>
+            <span class="hidden sm:inline">বাংলা</span>
+          </button>
         </div>
 
-        <button id="toggleByokBtn" type="button" title="Optional Personal Key Settings" class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 border border-white/35 text-white flex items-center justify-center transition-colors shrink-0">
-          <svg viewBox="0 0 24 24" class="w-4 h-4 md:w-5 md:h-5 fill-current"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+        <button id="toggleByokBtn" type="button" title="Optional Personal Key Settings" class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 text-white/90 flex items-center justify-center transition-colors shrink-0">
+          <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 md:w-4 md:h-4 fill-current"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
         </button>
       </div>
     </div>
@@ -236,14 +242,14 @@
           </div>
         </div>
 
-        <!-- Step B & C Unified: 4 Collapsible Preference Cards (Click Header to Expand/Collapse) -->
+        <!-- Step B & C Unified: 4 Collapsible Preference Cards with Clear "Select / বাছুন" Cue -->
         <div class="pt-5 border-t border-outline-variant/50">
           <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-4">
             <h2 id="step2PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface">
               Customize flavors, prep time &amp; wellness care
             </h2>
             <p id="step3SubpromptText" class="font-body-sm text-xs md:text-sm text-on-surface-variant">
-              Tap any card below to expand or collapse options
+              Tap any card below to select or change options
             </p>
           </div>
 
@@ -253,9 +259,12 @@
               <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none">
                 <div>
                   <span class="block font-label-sm text-[11px] text-secondary uppercase tracking-wider">1. Cuisine</span>
-                  <span id="summaryCuisineVal" class="font-headline-sm text-base text-on-surface">Bengali Heritage</span>
+                  <span id="summaryCuisineVal" class="font-headline-sm text-base text-on-surface">Select • Bengali Heritage</span>
                 </div>
-                <span class="w-7 h-7 rounded-full bg-white border border-outline-variant flex items-center justify-center text-xs text-primary font-bold transition-transform group-open:rotate-180">▾</span>
+                <span class="px-2 py-0.5 rounded-full bg-white border border-outline-variant text-[11px] text-primary font-bold flex items-center gap-1 shrink-0">
+                  <span class="nd-select-cue">Select</span>
+                  <span class="inline-block transition-transform group-open:rotate-180">▾</span>
+                </span>
               </summary>
               <div id="cuisinePills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
             </details>
@@ -265,9 +274,12 @@
               <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none">
                 <div>
                   <span class="block font-label-sm text-[11px] text-secondary uppercase tracking-wider">2. Diet Style</span>
-                  <span id="summaryDietVal" class="font-headline-sm text-base text-on-surface">Vegetarian</span>
+                  <span id="summaryDietVal" class="font-headline-sm text-base text-on-surface">Select • Vegetarian</span>
                 </div>
-                <span class="w-7 h-7 rounded-full bg-white border border-outline-variant flex items-center justify-center text-xs text-primary font-bold transition-transform group-open:rotate-180">▾</span>
+                <span class="px-2 py-0.5 rounded-full bg-white border border-outline-variant text-[11px] text-primary font-bold flex items-center gap-1 shrink-0">
+                  <span class="nd-select-cue">Select</span>
+                  <span class="inline-block transition-transform group-open:rotate-180">▾</span>
+                </span>
               </summary>
               <div id="dietPills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
             </details>
@@ -277,9 +289,12 @@
               <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none">
                 <div>
                   <span class="block font-label-sm text-[11px] text-secondary uppercase tracking-wider">3. Max Time</span>
-                  <span id="summaryPrepVal" class="font-headline-sm text-base text-on-surface">15 Mins</span>
+                  <span id="summaryPrepVal" class="font-headline-sm text-base text-on-surface">Select • 15 Mins</span>
                 </div>
-                <span class="w-7 h-7 rounded-full bg-white border border-outline-variant flex items-center justify-center text-xs text-primary font-bold transition-transform group-open:rotate-180">▾</span>
+                <span class="px-2 py-0.5 rounded-full bg-white border border-outline-variant text-[11px] text-primary font-bold flex items-center gap-1 shrink-0">
+                  <span class="nd-select-cue">Select</span>
+                  <span class="inline-block transition-transform group-open:rotate-180">▾</span>
+                </span>
               </summary>
               <div id="prepTimePills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
             </details>
@@ -289,9 +304,12 @@
               <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none">
                 <div>
                   <span id="step3PromptText" class="block font-label-sm text-[11px] text-primary uppercase tracking-wider">4. Extra Care</span>
-                  <span id="summaryConditionVal" class="font-headline-sm text-base text-on-surface">Everyday Wellness</span>
+                  <span id="summaryConditionVal" class="font-headline-sm text-base text-on-surface">Select • Everyday Wellness</span>
                 </div>
-                <span class="w-7 h-7 rounded-full bg-white border border-outline-variant flex items-center justify-center text-xs text-primary font-bold transition-transform group-open:rotate-180">▾</span>
+                <span class="px-2 py-0.5 rounded-full bg-white border border-outline-variant text-[11px] text-primary font-bold flex items-center gap-1 shrink-0">
+                  <span class="nd-select-cue">Select</span>
+                  <span class="inline-block transition-transform group-open:rotate-180">▾</span>
+                </span>
               </summary>
               <div id="conditionPills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
             </details>
@@ -474,7 +492,6 @@
   <!-- Circular Favicon Generator + Default Mobile Collapse Helper -->
   <script>
     (function () {
-      // 1. Render assets/nutridawn-logo.png into a circular browser favicon
       const img = new Image();
       img.src = 'assets/nutridawn-logo.png';
       img.onload = function () {
@@ -493,7 +510,6 @@
         if (link) link.href = canvas.toDataURL('image/png');
       };
 
-      // 2. Collapse the 4 preference cards by default on small mobile screens (<640px)
       if (window.innerWidth < 640) {
         document.querySelectorAll('.nd-filter-details').forEach((el) => el.removeAttribute('open'));
       }

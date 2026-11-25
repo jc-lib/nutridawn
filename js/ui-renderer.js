@@ -1,7 +1,7 @@
 /**
  * NutriDawn — Main Interactive UI Controller
  * Connects Infinite Dynamic Health Quotes, Onboarding, Sequential Collapsible Cards,
- * 3 Morning Paths, Pantry Swaps, Unified Morning Grocery Basket + Quick-Commerce Brand Logos,
+ * Circular Progress Loader, 3 Morning Paths, Pantry Swaps, Unified Morning Grocery Basket,
  * Mise Cooking Mode, Countdown Timer, Bookmarks, and Share Poster Export.
  * Designed & Created by: Dr. Joydip Chandra, BRSC
  */
@@ -78,6 +78,8 @@ const state = {
     prep: false,
     condition: false
   },
+  requestSeq: 0,
+  isGenerating: false,
   options: [],
   resolvedImages: new Map(),
   activeRecipe: null,
@@ -225,8 +227,8 @@ function applyLanguageBindings() {
     privacyNoteText: t(state.lang, 'privacyNote'),
     generateIdeasBtnLabel: t(state.lang, 'generateOptionsBtn'),
     loadingText: isBn
-      ? sanitizeBengali('আপনার জন্য ৩টি পুষ্টিকর ও সহজ সকালের জলখাবার সাজানো হচ্ছে...')
-      : 'Curating 3 wholesome, easy-to-cook morning recipes for you...',
+      ? sanitizeBengali('আপনার পছন্দের সকালের মেনু সাজানো হচ্ছে...')
+      : 'Your custom morning menu is getting ready...',
     optionsTitle: t(state.lang, 'optionsSectionTitle'),
     optionsSubtitle: isBn
       ? 'যেকোনো একটি বিকল্প বেছে নিন — ধাপে ধাপে রান্নার নিয়ম ও গ্রোসারি ঝুড়ি দেখতে পাবেন।'
@@ -251,8 +253,8 @@ function applyLanguageBindings() {
   renderOnboardingPills();
   updateSavedCountBadge();
   updateBasketCountBadge();
-  if (state.options.length > 0) renderOptionsGrid();
-  if (state.activeRecipe) renderActiveRecipeDetail();
+  if (state.options.length > 0 && !state.isGenerating) renderOptionsGrid();
+  if (state.activeRecipe && !state.isGenerating) renderActiveRecipeDetail();
 }
 
 /**
@@ -385,56 +387,152 @@ function updateProfileSelection(updates, filterKey = null, currentCardId = null,
 }
 
 /**
- * 4. Fetch 3 Morning Options & Hydrate Real Food Photos
+ * 4. Fetch 3 Morning Options with Circular Progress Ring & Stale-Request Lock
  */
 async function handleGenerateOptions(forceRefresh = false) {
+  const currentReqId = ++state.requestSeq;
+  state.isGenerating = true;
+
   const loadingSec = document.getElementById('loadingSection');
   const optionsSec = document.getElementById('options-section');
   const recipeSec = document.getElementById('recipe-detail-section');
   const offlineBanner = document.getElementById('offlineDisclaimerBanner');
+  const genBtn = document.getElementById('generateIdeasBtn');
+  const refBtn = document.getElementById('refreshOptionsBtn');
+  const circleEl = document.getElementById('loadingProgressCircle');
+  const pctEl = document.getElementById('loadingProgressPct');
+  const titleEl = document.getElementById('loadingText');
+  const subEl = document.getElementById('loadingSubtext');
 
-  if (loadingSec) loadingSec.classList.remove('hidden');
+  // Lock buttons and strictly hide any previous cards until all 3 recipes are ready
+  if (genBtn) {
+    genBtn.disabled = true;
+    genBtn.classList.add('opacity-60', 'cursor-not-allowed');
+  }
+  if (refBtn) {
+    refBtn.disabled = true;
+    refBtn.classList.add('opacity-60', 'cursor-not-allowed');
+  }
   if (optionsSec) optionsSec.classList.add('hidden');
   if (recipeSec) recipeSec.classList.add('hidden');
+  if (offlineBanner) offlineBanner.classList.add('hidden');
 
-  const { options } = await generateBreakfastOptions(state.profile, state.lang, forceRefresh);
-  state.options = options;
+  const isBn = state.lang === 'bn';
+  const catchyStages = isBn
+    ? [
+        { pct: 18, title: 'আপনার পছন্দের সকালের মেনু সাজানো হচ্ছে...', sub: 'বয়স ও স্বাস্থ্যের চাহিদা অনুযায়ী পুষ্টিগুণ মেলানো হচ্ছে' },
+        { pct: 48, title: 'টাটকা উপকরণ ও রান্নার ধাপ বাছাই চলছে...', sub: '১৫ মিনিটের মধ্যে সহজ ও সুস্বাদু রেসিপি তৈরি হচ্ছে' },
+        { pct: 76, title: 'প্রোটিন, ফাইবার ও স্বাদের ভারসাম্য দেখা হচ্ছে...', sub: 'আর মাত্র কয়েক মুহূর্ত অপেক্ষা করুন' },
+        { pct: 92, title: 'আপনার ৩টি সকালের জলখাবার প্রায় প্রস্তুত!', sub: 'প্লেট সাজানো হচ্ছে...' }
+      ]
+    : [
+        { pct: 18, title: 'Whisking together your morning menu...', sub: 'Matching nutrients to your life stage and wellness goals' },
+        { pct: 48, title: 'Curating fresh ingredients & quick steps...', sub: 'Crafting 3 wholesome recipes ready in under 15 minutes' },
+        { pct: 76, title: 'Balancing protein, fiber & morning flavor...', sub: 'Almost plated — finalizing your 3 personalized paths' },
+        { pct: 92, title: 'Your breakfast recipes are almost ready!', sub: 'Adding final culinary touches...' }
+      ];
 
-  if (loadingSec) loadingSec.classList.add('hidden');
-
-  if (offlineBanner) {
-    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-      offlineBanner.classList.remove('hidden');
-    } else {
-      offlineBanner.classList.add('hidden');
+  const CIRCUMFERENCE = 314.16;
+  const setProgress = (pct, stageIdx = 0) => {
+    const clamped = Math.min(100, Math.max(0, pct));
+    if (circleEl) {
+      circleEl.style.strokeDashoffset = String(CIRCUMFERENCE - (clamped / 100) * CIRCUMFERENCE);
     }
+    if (pctEl) pctEl.textContent = `${Math.round(clamped)}%`;
+    const stage = catchyStages[Math.min(stageIdx, catchyStages.length - 1)];
+    if (titleEl && stage) titleEl.textContent = stage.title;
+    if (subEl && stage) subEl.textContent = stage.sub;
+  };
+
+  setProgress(8, 0);
+  if (loadingSec) {
+    loadingSec.classList.remove('hidden');
+    loadingSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  renderOptionsGrid();
-  if (optionsSec) {
-    optionsSec.classList.remove('hidden');
-    optionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  let currentPct = 8;
+  let stageIdx = 0;
+  const progressTimer = setInterval(() => {
+    if (currentReqId !== state.requestSeq) {
+      clearInterval(progressTimer);
+      return;
+    }
+    if (currentPct < 92) {
+      currentPct += currentPct < 50 ? 6 : 3;
+      if (currentPct >= 75) stageIdx = 3;
+      else if (currentPct >= 50) stageIdx = 2;
+      else if (currentPct >= 25) stageIdx = 1;
+      setProgress(currentPct, stageIdx);
+    }
+  }, 320);
 
-  options.forEach(async (opt) => {
-    const media = await resolveDishImage(opt.photoKeywords, opt.title);
-    state.resolvedImages.set(opt.id, media);
-    const imgEl = document.getElementById(`opt-img-${opt.id}`);
-    const badgeEl = document.getElementById(`opt-badge-${opt.id}`);
-    if (imgEl) {
-      imgEl.src = media.url;
+  try {
+    const { options } = await generateBreakfastOptions(state.profile, state.lang, forceRefresh);
+
+    // Ignore stale response if user triggered a newer request
+    if (currentReqId !== state.requestSeq) {
+      clearInterval(progressTimer);
+      return;
     }
-    if (badgeEl) {
-      badgeEl.textContent =
-        media.sourceType === 'stock'
-          ? state.lang === 'bn'
-            ? 'বাস্তব খাবারের ছবি'
-            : 'Wikimedia / CC0 Photo'
-          : state.lang === 'bn'
-          ? 'রেসিপি ইলাস্ট্রেশন'
-          : 'Editorial Plate';
+
+    clearInterval(progressTimer);
+    setProgress(100, 3);
+    if (titleEl) {
+      titleEl.textContent = isBn
+        ? 'আপনার সকালের জলখাবার প্রস্তুত!'
+        : 'Your breakfast ideas are ready!';
     }
-  });
+
+    await new Promise((r) => setTimeout(r, 260));
+
+    state.options = options;
+    if (loadingSec) loadingSec.classList.add('hidden');
+
+    if (offlineBanner) {
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        offlineBanner.classList.remove('hidden');
+      } else {
+        offlineBanner.classList.add('hidden');
+      }
+    }
+
+    renderOptionsGrid();
+    if (optionsSec) {
+      optionsSec.classList.remove('hidden');
+      optionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    options.forEach(async (opt) => {
+      const media = await resolveDishImage(opt.photoKeywords, opt.title);
+      if (currentReqId !== state.requestSeq) return;
+      state.resolvedImages.set(opt.id, media);
+      const imgEl = document.getElementById(`opt-img-${opt.id}`);
+      const badgeEl = document.getElementById(`opt-badge-${opt.id}`);
+      if (imgEl) imgEl.src = media.url;
+      if (badgeEl) {
+        badgeEl.textContent =
+          media.sourceType === 'stock'
+            ? state.lang === 'bn'
+              ? 'বাস্তব খাবারের ছবি'
+              : 'Wikimedia / CC0 Photo'
+            : state.lang === 'bn'
+            ? 'রেসিপি ইলাস্ট্রেশন'
+            : 'Editorial Plate';
+      }
+    });
+  } finally {
+    if (currentReqId === state.requestSeq) {
+      state.isGenerating = false;
+      if (genBtn) {
+        genBtn.disabled = false;
+        genBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+      }
+      if (refBtn) {
+        refBtn.disabled = false;
+        refBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+      }
+    }
+  }
 }
 
 /**
@@ -1127,6 +1225,7 @@ function initApp() {
     const hrefAttr = target.getAttribute('href');
     if (hrefAttr === '#options-section') {
       e.preventDefault();
+      if (state.isGenerating) return;
       if (state.options.length === 0) {
         await handleGenerateOptions(false);
       } else {
@@ -1138,6 +1237,7 @@ function initApp() {
     }
     if (hrefAttr === '#recipe-detail-section') {
       e.preventDefault();
+      if (state.isGenerating) return;
       if (state.activeRecipe) {
         const detSec = document.getElementById('recipe-detail-section');
         detSec?.classList.remove('hidden');
@@ -1256,10 +1356,12 @@ function initApp() {
 
     // Generate 3 Options
     if (target.id === 'generateIdeasBtn') {
+      if (state.isGenerating) return;
       await handleGenerateOptions(false);
       return;
     }
     if (target.id === 'refreshOptionsBtn') {
+      if (state.isGenerating) return;
       await handleGenerateOptions(true);
       return;
     }

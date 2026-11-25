@@ -343,13 +343,47 @@
       </div>
     </div>
 
-    <!-- Loading Skeleton State -->
-    <section id="loadingSection" class="hidden max-w-7xl mx-auto px-4 md:px-8 py-10 text-center">
-      <div class="inline-flex flex-col items-center gap-3 p-8 rounded-3xl bg-surface-container-lowest border border-outline-variant shadow-sm">
-        <div class="w-12 h-12 rounded-full border-4 border-primary-fixed border-t-primary animate-spin"></div>
-        <p id="loadingText" class="font-headline-sm text-xl text-primary">
-          Curating 3 wholesome, easy-to-cook morning recipes for you...
-        </p>
+    <!-- Loading Circular Progress Overlay (Blocks Premature Cards Until Ready) -->
+    <section id="loadingSection" class="hidden max-w-4xl mx-auto px-4 md:px-8 py-10 text-center">
+      <div class="inline-flex flex-col items-center gap-4 p-8 md:p-10 rounded-3xl bg-surface-container-lowest border border-outline-variant shadow-md w-full max-w-lg">
+        <div class="relative w-28 h-28 flex items-center justify-center">
+          <svg class="w-28 h-28 -rotate-90" viewBox="0 0 120 120">
+            <circle
+              cx="60"
+              cy="60"
+              r="50"
+              fill="none"
+              stroke="#ffdad4"
+              stroke-width="10"
+            />
+            <circle
+              id="loadingProgressCircle"
+              cx="60"
+              cy="60"
+              r="50"
+              fill="none"
+              stroke="#ae2818"
+              stroke-width="10"
+              stroke-linecap="round"
+              stroke-dasharray="314.16"
+              stroke-dashoffset="314.16"
+              class="transition-all duration-300 ease-out"
+            />
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-xl leading-none mb-0.5">🍳</span>
+            <span id="loadingProgressPct" class="font-headline-sm text-base font-bold text-primary">0%</span>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <h3 id="loadingText" class="font-headline-md text-xl md:text-2xl text-on-surface">
+            Your custom morning menu is getting ready...
+          </h3>
+          <p id="loadingSubtext" class="font-body-sm text-xs md:text-sm text-on-surface-variant">
+            Balancing nutrition, flavors, and quick prep steps just for you.
+          </p>
+        </div>
       </div>
     </section>
 

@@ -1,7 +1,8 @@
 /**
  * NutriDawn — AI Breakfast Generation Service
  * Supports: (1) Cloudflare Worker Proxy, (2) Direct BYOK Groq/Gemini, (3) Offline Emergency Fallback
- * Includes session-level token-saving cache, WHO/IMA/ICMR-NIN clinical alignment, and Bengali NFC sanitization.
+ * Includes Weekend / No-Time-Bound Traditional Classics, WHO/IMA/ICMR-NIN clinical alignment,
+ * and Bengali Unicode NFC sanitization.
  * Designed & Created by: Dr. Joydip Chandra, BRSC
  */
 
@@ -52,6 +53,8 @@ function buildPromptPayload(profile, language) {
   const condObj = HEALTH_CONDITIONS.find((c) => c.id === profile.healthCondition) || HEALTH_CONDITIONS[0];
   const cuisineObj = CUISINES.find((c) => c.id === profile.cuisine) || CUISINES[0];
   const dietObj = DIET_TYPES.find((d) => d.id === profile.dietType) || DIET_TYPES[0];
+  const parsedPrep = Number(profile.maxPrepMinutes);
+  const isNoTimeBound = parsedPrep === 0;
 
   return {
     language,
@@ -61,9 +64,11 @@ function buildPromptPayload(profile, language) {
     micronutrientFocus: genderObj.micronutrientFocusEn,
     cuisineLabel: cuisineObj.labelEn,
     dietLabel: dietObj.labelEn,
-    maxPrepMinutes: Number(profile.maxPrepMinutes) || 15,
+    conditionId: condObj.id,
+    maxPrepMinutes: isNoTimeBound ? 0 : parsedPrep || 15,
+    isNoTimeBound,
     conditionLabel: condObj.labelEn,
-    clinicalRule: `${condObj.clinicalPromptRule} Texture note: ${ageObj.textureNote}. Strictly adhere to WHO, IMA, and ICMR-NIN dietary guidelines (e.g., WHO <5g/day sodium limit, <5% free sugars, low-GI complex grains for diabetes, heart-healthy fats).`,
+    clinicalRule: `${condObj.clinicalPromptRule} Texture note: ${ageObj.textureNote}. Align with WHO, IMA, and ICMR-NIN dietary guidelines.`,
     strictExclusions: condObj.strictExclusions || []
   };
 }
@@ -73,18 +78,29 @@ function buildInlineSystemPrompt(p, varietySeed = '') {
     p.language === 'bn'
       ? 'Output all user-facing display fields in natural, grammatically accurate Bengali Unicode script (বাংলা). Keep englishSearchQuery and photoKeywords strictly in English.'
       : 'Output all user-facing display fields in clear, warm, practical English.';
+
   const exclusions =
     p.strictExclusions.length > 0
       ? `STRICTLY FORBIDDEN INGREDIENTS: ${p.strictExclusions.join(', ')}.`
       : 'Use wholesome everyday household ingredients.';
 
-  return `You are NutriDawn's Clinical Culinary Architect. Generate 3 distinct, creative, easy-to-cook breakfast options (<= ${p.maxPrepMinutes} mins) aligned with WHO, IMA, and ICMR-NIN nutritional guidelines.
+  let timeAndStyleRule = `Each recipe MUST be ready in <= ${p.maxPrepMinutes} minutes.`;
+  if (p.isNoTimeBound) {
+    if (p.conditionId === 'none') {
+      timeAndStyleRule = `NO TIME BOUND (Weekend / Leisurely Morning, 20–40 mins allowed): Include beloved traditional rolled, stuffed, or slow-cooked breakfast classics matching the chosen cuisine! For Bengali Home-Style, feature classics like Whole-Wheat Atta Luchi with Chholar Dal or Sada Aloor Torkari, Koraishutir Kochuri, or Radhaballabhi (made with wholesome ingredients and balanced sides like curd or salad). For Pan-Indian, feature classics like Stuffed Aloo Paratha with Curd, Bedmi Puri-Sabzi, or Masala Dosa.`;
+    } else {
+      timeAndStyleRule = `NO TIME BOUND (Weekend / Leisurely Morning, 20–40 mins allowed): Include wholesome slow-cooked or stuffed traditional breakfast dishes (such as Stuffed Oats/Multigrain Paratha, Steamed Idli-Sambar, or Vegetable Daliya Khichdi) while strictly honoring all forbidden ingredient exclusions for ${p.conditionLabel}.`;
+    }
+  }
+
+  return `You are NutriDawn's Clinical Culinary Architect. Generate 3 distinct, authentic breakfast options aligned with WHO, IMA, and ICMR-NIN nutritional guidelines.
 Profile: ${p.ageLabel}, ${p.genderLabel} (${p.micronutrientFocus}), Baseline: ${p.baselineNutrients}, Cuisine: ${p.cuisineLabel}, Diet: ${p.dietLabel}, Care Mode: ${p.conditionLabel} (${p.clinicalRule}).
+${timeAndStyleRule}
 ${exclusions}
 ${langRule}
 ${varietySeed}
 Return ONLY valid JSON:
-{"options":[{"id":"opt-1","categoryTag":"Bengali Heritage","title":"Dish Name","subtitle":"1-line summary","prepMinutes":12,"calories":285,"proteinGrams":16,"carbsGrams":34,"fatGrams":8,"glycemicTag":"Low-GI","healthRationale":"Why this fits","photoKeywords":"3 English keywords","ingredients":[{"quantity":"1/2 cup","displayName":"Rolled Oats","englishSearchQuery":"rolled oats","aisle":"Grains & Flours"}],"pantrySwap":{"original":"Rolled Oats","replacement":"Sooji / Besan Mix","impactNote":"Same crisp texture"},"steps":["Step 1","Step 2","Step 3","Step 4"]}]}`;
+{"options":[{"id":"opt-1","categoryTag":"Bengali Heritage","title":"Dish Name","subtitle":"1-line summary","prepMinutes":25,"calories":340,"proteinGrams":14,"carbsGrams":42,"fatGrams":11,"glycemicTag":"Balanced Energy","healthRationale":"Why this fits","photoKeywords":"3 English keywords","ingredients":[{"quantity":"1 cup","displayName":"Whole Wheat Atta","englishSearchQuery":"whole wheat atta","aisle":"Grains & Flours"}],"pantrySwap":{"original":"Whole Wheat Atta","replacement":"Multigrain Atta","impactNote":"Higher fiber"},"steps":["Step 1","Step 2","Step 3","Step 4"]}]}`;
 }
 
 function parseJsonPayload(rawText) {

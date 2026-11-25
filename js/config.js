@@ -179,7 +179,8 @@ export const DIET_TYPES = Object.freeze([
 export const PREP_TIMES = Object.freeze([
   { id: 5, labelEn: '5 Mins (No-Cook)', labelBn: '৫ মিনিট (রান্না ছাড়া)' },
   { id: 10, labelEn: 'Up to 10 Mins', labelBn: '১০ মিনিটের মধ্যে' },
-  { id: 15, labelEn: 'Up to 15 Mins', labelBn: '১৫ মিনিটের মধ্যে' }
+  { id: 15, labelEn: 'Up to 15 Mins', labelBn: '১৫ মিনিটের মধ্যে' },
+  { id: 0, labelEn: 'No Time Bound (Weekend)', labelBn: 'সময়ের বাঁধন নেই (ছুটির সকাল)' }
 ]);
 
 /**

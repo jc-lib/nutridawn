@@ -266,6 +266,19 @@ function renderOnboardingPills() {
   renderGroup('prepTimePills', PREP_TIMES, state.profile.maxPrepMinutes, 'prep');
   renderGroup('conditionPills', HEALTH_CONDITIONS, state.profile.healthCondition, 'condition');
 
+const cObj = CUISINES.find((c) => c.id === state.profile.cuisine) || CUISINES[0];
+  const dObj = DIET_TYPES.find((d) => d.id === state.profile.dietType) || DIET_TYPES[0];
+  const pObj = PREP_TIMES.find((p) => Number(p.id) === Number(state.profile.maxPrepMinutes)) || PREP_TIMES[2];
+  const hObj = HEALTH_CONDITIONS.find((h) => h.id === state.profile.healthCondition) || HEALTH_CONDITIONS[0];
+
+  const setSum = (id, obj) => {
+    const el = document.getElementById(id);
+    if (el && obj) el.textContent = isBn ? sanitizeBengali(obj.labelBn) : obj.labelEn;
+  };
+  setSum('summaryCuisineVal', cObj);
+  setSum('summaryDietVal', dObj);
+  setSum('summaryPrepVal', pObj);
+  setSum('summaryConditionVal', hObj);
   updateBaselineNutritionPreview();
 }
 

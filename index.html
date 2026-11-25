@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>NutriDawn — Smart, Simple Breakfasts Tailored to Your Health</title>
-  <link rel="icon" type="image/png" href="assets/nutridawn-logo.png" />
+  <link id="dynamicFavicon" rel="icon" type="image/png" href="assets/nutridawn-logo.png" />
   <link rel="apple-touch-icon" href="assets/nutridawn-logo.png" />
 
   <!-- Google Fonts: Standardized Bengali Unicode -->
@@ -60,26 +60,26 @@
   <!-- html2canvas for Colorful PNG Recipe Poster Export -->
   <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
-<body class="bg-background text-on-surface min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed">
+<body class="bg-background text-on-surface min-h-screen flex flex-col overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
 
-  <!-- 1. Bright Sunrise Top Header Banner (Responsive Multi-Device Height & 3.5x Larger Logo) -->
+  <!-- 1. Bright Sunrise Top Header Banner (Zero Mobile Overflow + Edge-to-Edge Circular Logo) -->
   <header class="sticky top-0 left-0 w-full z-40 nd-sunrise-header no-print">
-    <div class="min-h-[84px] md:min-h-[112px] max-w-[1440px] mx-auto px-4 md:px-8 py-2.5 flex items-center justify-between gap-3 md:gap-6">
-      <!-- Brand Logo (64px Mobile / 96px Desktop) -->
-      <a href="#studio-top" class="flex items-center gap-3.5 md:gap-5 group shrink-0">
-        <div class="w-16 h-16 md:w-24 md:h-24 rounded-full bg-white flex items-center justify-center shadow-lg border-2 md:border-[3px] border-amber-200 overflow-hidden shrink-0 transition-transform duration-200 group-hover:scale-105">
+    <div class="min-h-[76px] md:min-h-[108px] max-w-[1440px] mx-auto px-2.5 sm:px-4 md:px-8 py-2 flex items-center justify-between gap-1.5 sm:gap-3 md:gap-5">
+      <!-- Brand Logo (Cropped to Fill Circle Edge-to-Edge Without White Rim) -->
+      <a href="#studio-top" class="flex items-center gap-2 sm:gap-3.5 md:gap-4 group min-w-0">
+        <div class="w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 rounded-full bg-white shadow-lg border-2 md:border-[3px] border-amber-200 overflow-hidden shrink-0 transition-transform duration-200 group-hover:scale-105">
           <img
             src="assets/nutridawn-logo.png"
             alt="NutriDawn Logo"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover scale-125"
           />
         </div>
-        <div class="flex flex-col">
-          <div class="flex items-center gap-2">
-            <span class="font-headline-md text-2xl sm:text-3xl md:text-4xl tracking-wide text-white leading-none drop-shadow-xs">NutriDawn</span>
-            <span class="px-2.5 py-0.5 rounded-full bg-amber-300 text-red-950 font-label-sm text-xs font-bold shadow-xs">Studio</span>
+        <div class="flex flex-col min-w-0">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="font-headline-md text-xl sm:text-3xl md:text-4xl tracking-wide text-white leading-none truncate">NutriDawn</span>
+            <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-amber-300 text-red-950 font-label-sm text-xs font-bold shadow-xs">Studio</span>
           </div>
-          <span id="headerTagline" class="font-label-sm text-xs md:text-sm text-amber-100 mt-1 hidden sm:block">
+          <span id="headerTagline" class="font-label-sm text-xs md:text-sm text-amber-100 mt-1 hidden md:block">
             Smart, Simple Breakfasts Tailored to Your Health.
           </span>
         </div>
@@ -96,21 +96,21 @@
         </button>
       </nav>
 
-      <!-- Language Switcher (EN | বাংলা) + Basket Button + Optional Settings -->
-      <div class="flex items-center gap-2 md:gap-3">
-        <button id="openBasketBtnHeader" type="button" class="px-3 md:px-4 py-2 rounded-full bg-amber-300 hover:bg-amber-200 text-red-950 font-label-sm text-xs md:text-sm font-bold flex items-center gap-1.5 shadow-sm transition-all">
+      <!-- Language Switcher (EN | বাংলা) + Basket Button + Settings (Fits 360px Mobile Screens) -->
+      <div class="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
+        <button id="openBasketBtnHeader" type="button" class="px-2 sm:px-3.5 py-1.5 md:py-2 rounded-full bg-amber-300 hover:bg-amber-200 text-red-950 font-label-sm text-xs md:text-sm font-bold flex items-center gap-1 shadow-sm transition-all">
           <span>🧺</span>
           <span class="hidden sm:inline" id="headerBasketLabel">Basket</span>
-          <span id="headerBasketCount" class="px-1.5 py-0.2 rounded-full bg-primary text-white text-xs">0</span>
+          <span id="headerBasketCount" class="px-1.5 py-0.2 rounded-full bg-primary text-white text-[11px] md:text-xs">0</span>
         </button>
 
         <div class="flex items-center bg-white/20 border border-white/35 rounded-full p-0.5 md:p-1" role="group" aria-label="Language Switch">
-          <button id="langEnBtn" type="button" class="px-3 md:px-3.5 py-1 md:py-1.5 rounded-full bg-white text-primary font-label-sm text-xs md:text-sm font-bold shadow-xs transition-all">EN</button>
-          <button id="langBnBtn" type="button" class="px-3 md:px-3.5 py-1 md:py-1.5 rounded-full text-white hover:bg-white/15 font-label-sm text-xs md:text-sm transition-all">বাংলা</button>
+          <button id="langEnBtn" type="button" class="px-2 sm:px-3 py-1 rounded-full bg-white text-primary font-label-sm text-[11px] sm:text-xs md:text-sm font-bold shadow-xs transition-all">EN</button>
+          <button id="langBnBtn" type="button" class="px-2 sm:px-3 py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-[11px] sm:text-xs md:text-sm transition-all">বাংলা</button>
         </div>
 
-        <button id="toggleByokBtn" type="button" title="Optional Personal Key Settings" class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 border border-white/35 text-white flex items-center justify-center transition-colors">
-          <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+        <button id="toggleByokBtn" type="button" title="Optional Personal Key Settings" class="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 border border-white/35 text-white flex items-center justify-center transition-colors shrink-0">
+          <svg viewBox="0 0 24 24" class="w-4 h-4 md:w-5 md:h-5 fill-current"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
         </button>
       </div>
     </div>
@@ -141,7 +141,7 @@
   <!-- Main Content -->
   <main id="studio-top" class="flex-1 w-full">
 
-    <!-- 2. Dedicated Editorial Hero Banner with Dynamic Quote (Right-Aligned Ref) & Approved 960px Wikimedia Food Photo -->
+    <!-- 2. Dedicated Editorial Hero Banner -->
     <section class="relative max-w-7xl mx-auto px-4 md:px-8 pt-6 pb-4 hide-in-cook-mode">
       <div class="rounded-3xl bg-gradient-to-br from-[#fff0f0] via-[#ffe4e2] to-[#ffd5cf] border border-outline-variant p-5 md:p-8 shadow-sm overflow-hidden">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
@@ -216,17 +216,19 @@
       </div>
 
       <div class="nd-editorial-card p-5 md:p-8 space-y-7">
-        <!-- Step A: Life Stage & Gender -->
+        <!-- Step A: Gender First, Then Life Stage -->
         <div>
           <h2 id="step1PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface mb-1">
             Who are we preparing breakfast for today?
           </h2>
           <p id="step1SubpromptText" class="font-body-sm text-sm text-on-surface-variant mb-3">
-            We automatically balance essential vitamins, protein, and energy for your stage of life.
+            Select gender and life stage — we automatically balance essential vitamins, protein, and energy.
           </p>
 
-          <div id="ageGroupPills" class="flex flex-wrap gap-2 mb-3"></div>
-          <div id="genderPills" class="flex flex-wrap items-center gap-2"></div>
+          <!-- Gender Row First -->
+          <div id="genderPills" class="flex flex-wrap items-center gap-2 mb-3"></div>
+          <!-- Age Group Row Second -->
+          <div id="ageGroupPills" class="flex flex-wrap gap-2"></div>
 
           <div class="mt-3 p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-start gap-2.5">
             <span class="text-primary text-base leading-none mt-0.5">🌿</span>
@@ -234,41 +236,65 @@
           </div>
         </div>
 
-        <!-- Step B & C Unified: 4-Column Meal Style & Extra Care Grid -->
+        <!-- Step B & C Unified: 4 Collapsible Preference Cards (Click Header to Expand/Collapse) -->
         <div class="pt-5 border-t border-outline-variant/50">
           <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-4">
             <h2 id="step2PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface">
               Customize flavors, prep time &amp; wellness care
             </h2>
             <p id="step3SubpromptText" class="font-body-sm text-xs md:text-sm text-on-surface-variant">
-              Aligned with WHO, IMA &amp; ICMR-NIN dietary standards
+              Tap any card below to expand or collapse options
             </p>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            <!-- Column 1: Cuisine Tradition -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/60">
-              <span class="block font-label-sm text-xs text-secondary uppercase tracking-wider mb-2">1. Cuisine Tradition</span>
-              <div id="cuisinePills" class="flex flex-wrap gap-1.5"></div>
-            </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5 items-start">
+            <!-- Card 1: Cuisine Tradition -->
+            <details class="nd-filter-details rounded-2xl bg-surface-container-low/80 border border-outline-variant/70 p-3.5 group" open>
+              <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none">
+                <div>
+                  <span class="block font-label-sm text-[11px] text-secondary uppercase tracking-wider">1. Cuisine</span>
+                  <span id="summaryCuisineVal" class="font-headline-sm text-base text-on-surface">Bengali Heritage</span>
+                </div>
+                <span class="w-7 h-7 rounded-full bg-white border border-outline-variant flex items-center justify-center text-xs text-primary font-bold transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div id="cuisinePills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
+            </details>
 
-            <!-- Column 2: Dietary Preference -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/60">
-              <span class="block font-label-sm text-xs text-secondary uppercase tracking-wider mb-2">2. Dietary Preference</span>
-              <div id="dietPills" class="flex flex-wrap gap-1.5"></div>
-            </div>
+            <!-- Card 2: Dietary Preference -->
+            <details class="nd-filter-details rounded-2xl bg-surface-container-low/80 border border-outline-variant/70 p-3.5 group" open>
+              <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none">
+                <div>
+                  <span class="block font-label-sm text-[11px] text-secondary uppercase tracking-wider">2. Diet Style</span>
+                  <span id="summaryDietVal" class="font-headline-sm text-base text-on-surface">Vegetarian</span>
+                </div>
+                <span class="w-7 h-7 rounded-full bg-white border border-outline-variant flex items-center justify-center text-xs text-primary font-bold transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div id="dietPills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
+            </details>
 
-            <!-- Column 3: Maximum Kitchen Time -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/60">
-              <span class="block font-label-sm text-xs text-secondary uppercase tracking-wider mb-2">3. Max Kitchen Time</span>
-              <div id="prepTimePills" class="flex flex-wrap gap-1.5"></div>
-            </div>
+            <!-- Card 3: Maximum Kitchen Time -->
+            <details class="nd-filter-details rounded-2xl bg-surface-container-low/80 border border-outline-variant/70 p-3.5 group" open>
+              <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none">
+                <div>
+                  <span class="block font-label-sm text-[11px] text-secondary uppercase tracking-wider">3. Max Time</span>
+                  <span id="summaryPrepVal" class="font-headline-sm text-base text-on-surface">15 Mins</span>
+                </div>
+                <span class="w-7 h-7 rounded-full bg-white border border-outline-variant flex items-center justify-center text-xs text-primary font-bold transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div id="prepTimePills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
+            </details>
 
-            <!-- Column 4: Extra Care Focus -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-low/70 border border-outline-variant/60">
-              <span id="step3PromptText" class="block font-label-sm text-xs text-primary uppercase tracking-wider mb-2">4. Extra Care (Optional)</span>
-              <div id="conditionPills" class="flex flex-wrap gap-1.5"></div>
-            </div>
+            <!-- Card 4: Extra Care Focus -->
+            <details class="nd-filter-details rounded-2xl bg-surface-container-low/80 border border-outline-variant/70 p-3.5 group" open>
+              <summary class="flex items-center justify-between gap-2 cursor-pointer list-none select-none">
+                <div>
+                  <span id="step3PromptText" class="block font-label-sm text-[11px] text-primary uppercase tracking-wider">4. Extra Care</span>
+                  <span id="summaryConditionVal" class="font-headline-sm text-base text-on-surface">Everyday Wellness</span>
+                </div>
+                <span class="w-7 h-7 rounded-full bg-white border border-outline-variant flex items-center justify-center text-xs text-primary font-bold transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <div id="conditionPills" class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/40"></div>
+            </details>
           </div>
         </div>
 
@@ -444,6 +470,35 @@
 
   <!-- Toast Notification Pill -->
   <div id="ndToast" class="hidden fixed bottom-20 lg:bottom-6 right-4 z-50 px-5 py-3 rounded-full bg-on-surface text-surface font-label-md text-xs shadow-xl"></div>
+
+  <!-- Circular Favicon Generator + Default Mobile Collapse Helper -->
+  <script>
+    (function () {
+      // 1. Render assets/nutridawn-logo.png into a circular browser favicon
+      const img = new Image();
+      img.src = 'assets/nutridawn-logo.png';
+      img.onload = function () {
+        const size = 64;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, -6, -6, size + 12, size + 12);
+        const link = document.getElementById('dynamicFavicon');
+        if (link) link.href = canvas.toDataURL('image/png');
+      };
+
+      // 2. Collapse the 4 preference cards by default on small mobile screens (<640px)
+      if (window.innerWidth < 640) {
+        document.querySelectorAll('.nd-filter-details').forEach((el) => el.removeAttribute('open'));
+      }
+    })();
+  </script>
 
   <!-- Main Modular Entry Point -->
   <script type="module" src="js/ui-renderer.js"></script>

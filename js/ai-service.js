@@ -68,7 +68,7 @@ function buildPromptPayload(profile, language) {
   };
 }
 
-function buildInlineSystemPrompt(p) {
+function buildInlineSystemPrompt(p, varietySeed = '') {
   const langRule =
     p.language === 'bn'
       ? 'Output all user-facing display fields in natural, grammatically accurate Bengali Unicode script (বাংলা). Keep englishSearchQuery and photoKeywords strictly in English.'
@@ -78,19 +78,73 @@ function buildInlineSystemPrompt(p) {
       ? `STRICTLY FORBIDDEN INGREDIENTS: ${p.strictExclusions.join(', ')}.`
       : 'Use wholesome everyday household ingredients.';
 
-  return `You are NutriDawn's Clinical Culinary Architect. Generate 3 distinct, easy-to-cook breakfast options (<= ${p.maxPrepMinutes} mins) aligned with WHO, IMA, and ICMR-NIN nutritional guidelines.
+  return `You are NutriDawn's Clinical Culinary Architect. Generate 3 distinct, creative, easy-to-cook breakfast options (<= ${p.maxPrepMinutes} mins) aligned with WHO, IMA, and ICMR-NIN nutritional guidelines.
 Profile: ${p.ageLabel}, ${p.genderLabel} (${p.micronutrientFocus}), Baseline: ${p.baselineNutrients}, Cuisine: ${p.cuisineLabel}, Diet: ${p.dietLabel}, Care Mode: ${p.conditionLabel} (${p.clinicalRule}).
 ${exclusions}
 ${langRule}
+${varietySeed}
 Return ONLY valid JSON:
 {"options":[{"id":"opt-1","categoryTag":"Bengali Heritage","title":"Dish Name","subtitle":"1-line summary","prepMinutes":12,"calories":285,"proteinGrams":16,"carbsGrams":34,"fatGrams":8,"glycemicTag":"Low-GI","healthRationale":"Why this fits","photoKeywords":"3 English keywords","ingredients":[{"quantity":"1/2 cup","displayName":"Rolled Oats","englishSearchQuery":"rolled oats","aisle":"Grains & Flours"}],"pantrySwap":{"original":"Rolled Oats","replacement":"Sooji / Besan Mix","impactNote":"Same crisp texture"},"steps":["Step 1","Step 2","Step 3","Step 4"]}]}`;
 }
 
-async function fetchDirectByok(byok, payload) {
-  const prompt = buildInlineSystemPrompt(payload);
+function parseJsonPayload(rawText) {
+  const cleaned = String(rawText || '')
+    .trim()
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/\s*```$/i, '');
+  return JSON.parse(cleaned);
+}
+
+async function fetchViaCloudflareWorker(payload, forceRefresh = false) {
+  const varietySeed = forceRefresh
+    ? `Request Variation #${Date.now() % 10000}: Offer 3 completely fresh, different recipes from typical defaults.`
+    : '';
+  const systemPrompt = buildInlineSystemPrompt(payload, varietySeed);
+
+  const res = await fetch(APP_CONFIG.api.workerUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: APP_CONFIG.api.defaultGroqModel,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: `Generate 3 tailored ${payload.cuisineLabel} (${payload.dietLabel}) breakfast options in valid JSON.`
+        }
+      ],
+      temperature: forceRefresh ? 0.85 : 0.65,
+      max_tokens: 2600
+    })
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(`Worker HTTP ${res.status}: ${errText.slice(0, 160)}`);
+  }
+
+  const data = await res.json();
+  if (Array.isArray(data?.options)) {
+    return data;
+  }
+
+  const content = data?.choices?.[0]?.message?.content;
+  if (!content) {
+    throw new Error(data?.error?.message || data?.error || 'Empty completion from Worker');
+  }
+
+  return parseJsonPayload(content);
+}
+
+async function fetchDirectByok(byok, payload, forceRefresh = false) {
+  const varietySeed = forceRefresh
+    ? `Request Variation #${Date.now() % 10000}: Offer 3 completely fresh, different recipes.`
+    : '';
+  const prompt = buildInlineSystemPrompt(payload, varietySeed);
 
   if (byok.provider === 'groq') {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const res = await fetch('[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${byok.apiKey}`,
@@ -102,25 +156,25 @@ async function fetchDirectByok(byok, payload) {
           { role: 'system', content: prompt },
           { role: 'user', content: 'Generate 3 tailored breakfast options JSON.' }
         ],
-        temperature: 0.5,
+        temperature: forceRefresh ? 0.85 : 0.65,
         max_tokens: 2600,
         response_format: { type: 'json_object' }
       })
     });
     if (!res.ok) throw new Error(`Groq BYOK HTTP ${res.status}`);
     const data = await res.json();
-    return JSON.parse(data.choices[0].message.content);
+    return parseJsonPayload(data.choices[0].message.content);
   }
 
   if (byok.provider === 'gemini') {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${APP_CONFIG.api.fallbackGeminiModel}:generateContent?key=${encodeURIComponent(byok.apiKey)}`;
+    const url = `[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){APP_CONFIG.api.fallbackGeminiModel}:generateContent?key=${encodeURIComponent(byok.apiKey)}`;
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.5,
+          temperature: forceRefresh ? 0.85 : 0.65,
           maxOutputTokens: 2600,
           responseMimeType: 'application/json'
         }
@@ -128,7 +182,7 @@ async function fetchDirectByok(byok, payload) {
     });
     if (!res.ok) throw new Error(`Gemini BYOK HTTP ${res.status}`);
     const data = await res.json();
-    return JSON.parse(data.candidates[0].content.parts[0].text);
+    return parseJsonPayload(data.candidates[0].content.parts[0].text);
   }
 
   throw new Error('Invalid BYOK provider');
@@ -364,20 +418,14 @@ export async function generateBreakfastOptions(profile, language = 'en', forceRe
     let source = 'worker-proxy';
 
     if (byok.provider !== 'proxy' && byok.apiKey) {
-      rawResponse = await fetchDirectByok(byok, payload);
+      rawResponse = await fetchDirectByok(byok, payload, forceRefresh);
       source = `byok-${byok.provider}`;
     } else if (
       APP_CONFIG.api.workerUrl &&
       !APP_CONFIG.api.workerUrl.includes('your-subdomain')
     ) {
-      const res = await fetch(APP_CONFIG.api.workerUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error(`Worker HTTP ${res.status}`);
-      rawResponse = await res.json();
-      source = rawResponse?.meta?.engine || 'worker-proxy';
+      rawResponse = await fetchViaCloudflareWorker(payload, forceRefresh);
+      source = 'worker-proxy';
     } else {
       const fallback = getCuratedFallbackOptions(profile, language);
       return { options: fallback, source: 'curated-fallback' };
@@ -386,7 +434,12 @@ export async function generateBreakfastOptions(profile, language = 'en', forceRe
     if (rawResponse && Array.isArray(rawResponse.options) && rawResponse.options.length > 0) {
       const sanitized = rawResponse.options
         .slice(0, 3)
-        .map((opt, idx) => sanitizeRecipeObject({ id: opt.id || `opt-${idx + 1}`, ...opt }, language));
+        .map((opt, idx) =>
+          sanitizeRecipeObject(
+            { id: `${opt.id || `opt-${idx + 1}`}-${Date.now()}-${idx}`, ...opt },
+            language
+          )
+        );
       sessionResultCache.set(cacheKey, sanitized);
       return { options: sanitized, source };
     }

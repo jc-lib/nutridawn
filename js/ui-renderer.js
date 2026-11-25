@@ -1120,8 +1120,42 @@ function initApp() {
   loadDynamicHealthQuote(true);
 
   document.addEventListener('click', async (e) => {
-    const target = e.target.closest('button, a[data-qc-launch], [data-step-idx]');
+    const target = e.target.closest('button, a[data-qc-launch], a[href^="#"], [data-step-idx]');
     if (!target) return;
+
+    // Navigation Links (#options-section, #recipe-detail-section, #onboarding-section)
+    const hrefAttr = target.getAttribute('href');
+    if (hrefAttr === '#options-section') {
+      e.preventDefault();
+      if (state.options.length === 0) {
+        await handleGenerateOptions(false);
+      } else {
+        const optSec = document.getElementById('options-section');
+        optSec?.classList.remove('hidden');
+        optSec?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return;
+    }
+    if (hrefAttr === '#recipe-detail-section') {
+      e.preventDefault();
+      if (state.activeRecipe) {
+        const detSec = document.getElementById('recipe-detail-section');
+        detSec?.classList.remove('hidden');
+        detSec?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        showToast(
+          state.lang === 'bn'
+            ? 'প্রথমে ৩টি সকালের বিকল্প থেকে যেকোনো একটি রেসিপি বেছে নিন'
+            : 'Choose any recipe from the 3 Morning Paths first to open it here.'
+        );
+        if (state.options.length === 0) {
+          await handleGenerateOptions(false);
+        } else {
+          document.getElementById('options-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+      return;
+    }
 
     // Quote Refresh
     if (target.id === 'nextHealthQuoteBtn') {

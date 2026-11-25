@@ -120,29 +120,29 @@
         </button>
       </div>
     </div>
-  </header>
 
-  <!-- Collapsible Optional Settings Drawer -->
-  <section id="byokDrawer" class="hidden bg-surface-container-low border-b border-outline-variant no-print">
-    <div class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-3">
-      <div class="flex-1">
-        <label for="byokProviderSelect" class="block font-label-sm text-xs text-secondary mb-1">Recipe Engine Connection (Stored Privately in Browser)</label>
-        <select id="byokProviderSelect" class="w-full h-10 px-4 rounded-full bg-white border border-outline-variant text-sm text-on-surface">
-          <option value="proxy">Default Studio Cloud Engine (Recommended)</option>
-          <option value="groq">Personal Groq Free API Key</option>
-          <option value="gemini">Personal Google Gemini Free API Key</option>
-        </select>
-      </div>
-      <div class="flex-1">
-        <label for="byokKeyInput" class="block font-label-sm text-xs text-secondary mb-1">Personal Key (Optional)</label>
-        <input id="byokKeyInput" type="password" placeholder="gsk_... or AIza..." class="w-full h-10 px-4 rounded-full bg-white border border-outline-variant text-sm text-on-surface" />
-      </div>
-      <div class="flex items-center gap-2">
-        <button id="saveByokBtn" type="button" class="nd-pill-btn active">Save</button>
-        <button id="clearByokBtn" type="button" class="nd-pill-btn">Reset</button>
+    <!-- Collapsible Optional Settings Drawer (Inside Sticky Header) -->
+    <div id="byokDrawer" class="hidden bg-surface-container-low border-t border-outline-variant text-on-surface shadow-md no-print">
+      <div class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-3">
+        <div class="flex-1">
+          <label for="byokProviderSelect" class="block font-label-sm text-xs text-secondary mb-1">Recipe Engine Connection (Stored Privately in Browser)</label>
+          <select id="byokProviderSelect" class="w-full h-10 px-4 rounded-full bg-white border border-outline-variant text-sm text-on-surface">
+            <option value="proxy">Default Studio Cloud Engine (Recommended)</option>
+            <option value="groq">Personal Groq Free API Key</option>
+            <option value="gemini">Personal Google Gemini Free API Key</option>
+          </select>
+        </div>
+        <div class="flex-1">
+          <label for="byokKeyInput" class="block font-label-sm text-xs text-secondary mb-1">Personal Key (Optional)</label>
+          <input id="byokKeyInput" type="password" placeholder="gsk_... or AIza..." class="w-full h-10 px-4 rounded-full bg-white border border-outline-variant text-sm text-on-surface" />
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="saveByokBtn" type="button" class="nd-pill-btn active">Save</button>
+          <button id="clearByokBtn" type="button" class="nd-pill-btn">Reset</button>
+        </div>
       </div>
     </div>
-  </section>
+  </header>
 
   <!-- Main Content -->
   <main id="studio-top" class="flex-1 w-full">

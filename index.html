@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>NutriDawn — Smart, Simple Breakfasts Tailored to Your Health</title>
+  <link rel="icon" type="image/png" href="assets/nutridawn-logo.png" />
+  <link rel="apple-touch-icon" href="assets/nutridawn-logo.png" />
+
+  <!-- Google Fonts: Standardized Bengali Unicode -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS + Kitchen Editorial Tokens -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#fff8f7",
+            "surface-dim": "#ffced0",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#fff0f0",
+            "surface-container": "#ffe9e9",
+            "surface-container-high": "#ffe1e2",
+            "surface-container-highest": "#ffdadb",
+            "on-surface": "#2d0b10",
+            "on-surface-variant": "#4f3733",
+            "outline": "#8e706b",
+            "outline-variant": "#e2bfb8",
+            "primary": "#ae2818",
+            "on-primary": "#ffffff",
+            "primary-container": "#d1412e",
+            "primary-fixed": "#ffdad4",
+            "primary-fixed-dim": "#ffb4a7",
+            "on-primary-fixed": "#400100",
+            "secondary": "#a33948",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#fe7e8c",
+            "secondary-fixed": "#ffdadb",
+            "on-secondary-fixed": "#40000e",
+            "tertiary": "#7c41a2",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed": "#f4d9ff",
+            "on-tertiary-fixed": "#30004b",
+            "background": "#fff8f7",
+            "on-background": "#2d0b10"
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Modular Kitchen Editorial & Share Poster Styles -->
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/share-card.css" />
+
+  <!-- html2canvas for Colorful PNG Recipe Poster Export -->
+  <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed">
+
+  <!-- 1. Bright Sunrise Top Header Banner -->
+  <header class="sticky top-0 left-0 w-full z-40 nd-sunrise-header no-print">
+    <div class="h-20 max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between gap-3">
+      <!-- Brand Logo (Uses Your Exact Shared Logo in assets/nutridawn-logo.png) -->
+      <a href="#studio-top" class="flex items-center gap-3 group">
+        <div class="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-md border-2 border-amber-200 overflow-hidden shrink-0">
+          <img
+            src="assets/nutridawn-logo.png"
+            alt="NutriDawn Logo"
+            class="w-full h-full object-contain p-0.5"
+          />
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="font-headline-md text-2xl md:text-3xl tracking-wide text-white leading-none">NutriDawn</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-300 text-red-950 font-label-sm text-[11px] font-bold">Studio</span>
+          </div>
+          <span id="headerTagline" class="font-label-sm text-xs text-amber-100 hidden sm:block">
+            Smart, Simple Breakfasts Tailored to Your Health.
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Anchor Nav -->
+      <nav class="hidden lg:flex items-center gap-1 p-1 bg-white/15 backdrop-blur-md rounded-full border border-white/25">
+        <a href="#onboarding-section" class="px-4 py-1.5 rounded-full bg-white text-primary font-label-md text-xs font-bold shadow-xs">Studio</a>
+        <a href="#options-section" class="px-4 py-1.5 rounded-full text-white hover:bg-white/20 font-label-md text-xs transition-colors">3 Morning Paths</a>
+        <a href="#recipe-detail-section" class="px-4 py-1.5 rounded-full text-white hover:bg-white/20 font-label-md text-xs transition-colors">Active Recipe</a>
+        <button id="openSavedDrawerBtnDesktop" type="button" class="px-4 py-1.5 rounded-full text-white hover:bg-white/20 font-label-md text-xs transition-colors flex items-center gap-1.5">
+          <span>Saved</span>
+          <span id="savedCountBadgeDesktop" class="px-1.5 py-0.2 rounded-full bg-amber-300 text-red-950 font-bold text-[11px]">0</span>
+        </button>
+      </nav>
+
+      <!-- Language Switcher (EN | বাংলা) + Basket Button + Optional Settings -->
+      <div class="flex items-center gap-2">
+        <button id="openBasketBtnHeader" type="button" class="px-3 py-1.5 rounded-full bg-amber-300 hover:bg-amber-200 text-red-950 font-label-sm text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all">
+          <span>🧺</span>
+          <span class="hidden sm:inline" id="headerBasketLabel">Basket</span>
+          <span id="headerBasketCount" class="px-1.5 py-0.2 rounded-full bg-primary text-white text-[11px]">0</span>
+        </button>
+
+        <div class="flex items-center bg-white/20 border border-white/35 rounded-full p-0.5" role="group" aria-label="Language Switch">
+          <button id="langEnBtn" type="button" class="px-3 py-1 rounded-full bg-white text-primary font-label-sm text-xs font-bold shadow-xs transition-all">EN</button>
+          <button id="langBnBtn" type="button" class="px-3 py-1 rounded-full text-white hover:bg-white/15 font-label-sm text-xs transition-all">বাংলা</button>
+        </div>
+
+        <button id="toggleByokBtn" type="button" title="Optional Personal Key Settings" class="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 border border-white/35 text-white flex items-center justify-center transition-colors">
+          <svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Collapsible Optional Settings Drawer -->
+  <section id="byokDrawer" class="hidden bg-surface-container-low border-b border-outline-variant no-print">
+    <div class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-3">
+      <div class="flex-1">
+        <label for="byokProviderSelect" class="block font-label-sm text-xs text-secondary mb-1">Recipe Engine Connection (Stored Privately in Browser)</label>
+        <select id="byokProviderSelect" class="w-full h-10 px-4 rounded-full bg-white border border-outline-variant text-sm text-on-surface">
+          <option value="proxy">Default Studio Cloud Engine (Recommended)</option>
+          <option value="groq">Personal Groq Free API Key</option>
+          <option value="gemini">Personal Google Gemini Free API Key</option>
+        </select>
+      </div>
+      <div class="flex-1">
+        <label for="byokKeyInput" class="block font-label-sm text-xs text-secondary mb-1">Personal Key (Optional)</label>
+        <input id="byokKeyInput" type="password" placeholder="gsk_... or AIza..." class="w-full h-10 px-4 rounded-full bg-white border border-outline-variant text-sm text-on-surface" />
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="saveByokBtn" type="button" class="nd-pill-btn active">Save</button>
+        <button id="clearByokBtn" type="button" class="nd-pill-btn">Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main id="studio-top" class="flex-1 w-full">
+
+    <!-- 2. Dedicated Editorial Hero Banner with Dynamic Quote (Right-Aligned Ref) & Approved 960px Wikimedia Food Photo -->
+    <section class="relative max-w-7xl mx-auto px-4 md:px-8 pt-6 pb-4 hide-in-cook-mode">
+      <div class="rounded-3xl bg-gradient-to-br from-[#fff0f0] via-[#ffe4e2] to-[#ffd5cf] border border-outline-variant p-5 md:p-8 shadow-sm overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <!-- Left Column: Dynamic Health Quote + Hero Copy -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="p-4 rounded-2xl bg-white/95 backdrop-blur border border-primary/20 shadow-xs flex items-start justify-between gap-3">
+              <div class="flex-1">
+                <div class="flex items-start gap-2">
+                  <span class="text-lg leading-none mt-0.5">☀️</span>
+                  <p id="dynamicHealthQuoteText" class="font-body-sm text-sm md:text-base italic font-semibold text-on-surface">
+                    “A protein- and fiber-rich breakfast stabilizes morning blood glucose and sharpens cognitive focus.”
+                  </p>
+                </div>
+                <span id="dynamicHealthQuoteAuthor" class="block text-right font-label-sm text-xs text-primary font-bold mt-1.5">
+                  — ICMR–National Institute of Nutrition (NIN)
+                </span>
+              </div>
+              <button id="nextHealthQuoteBtn" type="button" title="Refresh Health Quote" class="px-2.5 py-1 rounded-full bg-surface-container hover:bg-primary-fixed text-primary text-xs font-bold shrink-0 transition-colors">
+                ↻
+              </button>
+            </div>
+
+            <div class="inline-flex items-center gap-2 bg-white/85 px-3.5 py-1 rounded-full border border-outline-variant/70">
+              <span class="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+              <span class="font-label-sm text-xs text-primary font-bold">WHO • IMA • ICMR-NIN Aligned • 15-Min Prep</span>
+            </div>
+
+            <h1 id="heroHeading" class="font-headline-lg text-3xl md:text-5xl text-on-surface leading-tight">
+              Good morning! Let’s plan a breakfast that feels kind to your health &amp; mind.
+            </h1>
+
+            <p id="heroSubtext" class="font-body-lg text-base md:text-lg text-on-surface-variant">
+              Tell us a little about yourself, and we will suggest three easy-to-cook morning ideas tailored to your needs.
+            </p>
+          </div>
+
+          <!-- Right Column: Wikimedia Standard 960px Thumbnail Size -->
+          <div class="lg:col-span-5">
+            <div class="relative rounded-3xl overflow-hidden border-2 border-white shadow-lg bg-white">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/960px-Good_Food_Display_-_NCI_Visuals_Online.jpg"
+                alt="Wholesome Morning Breakfast Spread of Grains, Fruits, Greens and Protein"
+                class="w-full h-64 md:h-72 object-cover"
+                onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg';"
+              />
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-4 text-white">
+                <span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-300 text-red-950 font-label-sm text-[11px] font-bold mb-1">
+                  Nourish Health &amp; Mind
+                </span>
+                <p class="font-body-sm text-xs md:text-sm text-white/95">
+                  Balanced Protein • Slow-Release Whole Grains • Essential Micronutrients
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Gentle Onboarding Section -->
+    <section id="onboarding-section" class="relative max-w-7xl mx-auto px-4 md:px-8 pt-3 pb-10 hide-in-cook-mode">
+      <div id="returningUserBanner" class="hidden mb-5 p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <span class="text-primary font-bold">✓</span>
+          <span id="returningUserText" class="font-body-sm text-sm text-on-surface font-medium">
+            Welcome back! Your saved morning preferences are ready.
+          </span>
+        </div>
+        <button id="resetSavedProfileBtn" type="button" class="font-label-sm text-xs text-secondary underline hover:text-primary">
+          Reset Saved Data
+        </button>
+      </div>
+
+      <div class="nd-editorial-card p-5 md:p-8 space-y-7">
+        <div>
+          <h2 id="step1PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface mb-1">
+            Who are we preparing breakfast for today?
+          </h2>
+          <p id="step1SubpromptText" class="font-body-sm text-sm text-on-surface-variant mb-3">
+            We automatically balance essential vitamins, protein, and energy for your stage of life.
+          </p>
+
+          <div id="ageGroupPills" class="flex flex-wrap gap-2 mb-3"></div>
+          <div id="genderPills" class="flex flex-wrap items-center gap-2"></div>
+
+          <div class="mt-3 p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-start gap-2.5">
+            <span class="text-primary text-base leading-none mt-0.5">🌿</span>
+            <p id="baselineNutritionPreview" class="font-body-sm text-sm text-on-surface-variant"></p>
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-outline-variant/50">
+          <h2 id="step2PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface mb-3">
+            Which flavors and kitchen style do you enjoy in the morning?
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <span class="block font-label-sm text-xs text-secondary mb-2">Cuisine Tradition</span>
+              <div id="cuisinePills" class="flex flex-wrap gap-1.5"></div>
+            </div>
+            <div>
+              <span class="block font-label-sm text-xs text-secondary mb-2">Dietary Preference</span>
+              <div id="dietPills" class="flex flex-wrap gap-1.5"></div>
+            </div>
+            <div>
+              <span class="block font-label-sm text-xs text-secondary mb-2">Maximum Kitchen Time</span>
+              <div id="prepTimePills" class="flex flex-wrap gap-1.5"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-5 border-t border-outline-variant/50">
+          <h2 id="step3PromptText" class="font-headline-md text-xl md:text-2xl text-on-surface mb-1">
+            Is there anything your body needs extra care with right now?
+          </h2>
+          <p id="step3SubpromptText" class="font-body-sm text-sm text-on-surface-variant mb-3">
+            Aligned with WHO, IMA &amp; ICMR-NIN dietary standards — optional if you simply want everyday wellness.
+          </p>
+          <div id="conditionPills" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="pt-5 border-t border-outline-variant/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-2 text-on-surface-variant">
+            <span class="text-secondary text-sm">🔒</span>
+            <span id="privacyNoteText" class="font-body-sm text-xs">
+              Your preferences stay privately on your own device so you never have to re-enter them.
+            </span>
+          </div>
+
+          <button id="generateIdeasBtn" type="button" class="nd-btn-primary w-full sm:w-auto">
+            <span>✨</span>
+            <span id="generateIdeasBtnLabel">Show 3 Breakfast Ideas</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Offline Disclaimer Banner -->
+    <div id="offlineDisclaimerBanner" class="hidden max-w-7xl mx-auto px-4 md:px-8 mb-6 no-print">
+      <div class="p-4 rounded-2xl bg-secondary-fixed border border-secondary text-on-secondary-fixed flex items-center gap-3">
+        <span class="text-lg">📡</span>
+        <p id="offlineDisclaimerText" class="font-body-sm text-sm font-medium">
+          Your device appears to be offline — displaying curated pantry breakfast ideas until your connection returns.
+        </p>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton State -->
+    <section id="loadingSection" class="hidden max-w-7xl mx-auto px-4 md:px-8 py-10 text-center">
+      <div class="inline-flex flex-col items-center gap-3 p-8 rounded-3xl bg-surface-container-lowest border border-outline-variant shadow-sm">
+        <div class="w-12 h-12 rounded-full border-4 border-primary-fixed border-t-primary animate-spin"></div>
+        <p id="loadingText" class="font-headline-sm text-xl text-primary">
+          Curating 3 wholesome, easy-to-cook morning recipes for you...
+        </p>
+      </div>
+    </section>
+
+    <!-- 4. Stage A: 3 Balanced Morning Paths -->
+    <section id="options-section" class="hidden max-w-7xl mx-auto px-4 md:px-8 py-8 hide-in-cook-mode">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-2 mb-6">
+        <div>
+          <span class="font-label-sm text-xs text-primary uppercase tracking-wider">Step 1 of 2 • Choose Your Tempo</span>
+          <h2 id="optionsTitle" class="font-headline-lg text-3xl text-on-surface">Choose Your Morning Favorite</h2>
+          <p id="optionsSubtitle" class="font-body-md text-sm text-on-surface-variant">
+            Pick any one option below to view step-by-step instructions, ingredients, and your Morning Grocery Basket.
+          </p>
+        </div>
+        <button id="refreshOptionsBtn" type="button" class="nd-btn-secondary self-start md:self-auto">
+          <span>↻</span>
+          <span>New 3 Ideas</span>
+        </button>
+      </div>
+
+      <div id="optionsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- 5. Stage B: Full Recipe, Mise-en-Place, Morning Grocery Basket & Cook Mode -->
+    <section id="recipe-detail-section" class="hidden max-w-6xl mx-auto px-4 md:px-8 py-8"></section>
+
+    <!-- 6. Unified Morning Grocery Basket & Quick-Commerce Brand Logos Modal -->
+    <div id="basketModal" class="hidden fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-print">
+      <div class="bg-surface rounded-3xl p-5 md:p-7 max-w-2xl w-full shadow-2xl border border-outline-variant my-auto">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-outline-variant">
+          <div>
+            <h3 class="font-headline-md text-2xl text-primary flex items-center gap-2">
+              <span>🧺</span>
+              <span id="basketModalTitle">Morning Grocery Basket</span>
+            </h3>
+            <p id="basketModalSubtitle" class="font-body-sm text-xs text-on-surface-variant">
+              Your selected ingredients are ready below. Choose any quick-commerce partner to order.
+            </p>
+          </div>
+          <button id="closeBasketModalBtn" type="button" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-bold">
+            ✕
+          </button>
+        </div>
+
+        <div id="basketItemsMount" class="max-h-56 overflow-y-auto space-y-2 mb-5 pr-1"></div>
+
+        <div class="flex items-center justify-between gap-3 mb-5 p-3 rounded-2xl bg-surface-container-low border border-outline-variant">
+          <span class="font-body-sm text-xs text-on-surface-variant">
+            Tip: Clicking any store logo copies your basket list &amp; opens the store search.
+          </span>
+          <button id="copyBasketClipboardBtn" type="button" class="nd-pill-btn active shrink-0">
+            📋 Copy List
+          </button>
+        </div>
+
+        <div>
+          <span class="block font-label-sm text-xs text-secondary uppercase tracking-wider mb-3">
+            Select Quick-Commerce Cart Partner
+          </span>
+          <div id="quickCommerceLogosGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Colorful Shareable Recipe Poster Preview Modal -->
+    <div id="shareModal" class="hidden fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-print">
+      <div class="bg-surface rounded-3xl p-5 md:p-6 max-w-3xl w-full shadow-2xl border border-outline-variant my-auto">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-headline-md text-2xl text-primary">Colorful Shareable Recipe Card</h3>
+          <button id="closeShareModalBtn" type="button" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-bold">
+            ✕
+          </button>
+        </div>
+
+        <div id="sharePosterMount" class="flex justify-center overflow-x-auto pb-2"></div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-end gap-3">
+          <button id="printRecipeBtn" type="button" class="nd-btn-secondary">
+            <span>🖨️ Print Card</span>
+          </button>
+          <button id="downloadPngBtn" type="button" class="nd-btn-primary">
+            <span>⬇️ Save High-Res PNG</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Favorites Drawer Modal -->
+    <div id="savedModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+      <div class="bg-surface rounded-3xl p-6 max-w-2xl w-full max-h-[82vh] overflow-y-auto shadow-2xl border border-outline-variant">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-headline-md text-2xl text-primary">Saved Morning Favorites</h3>
+          <button id="closeSavedModalBtn" type="button" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center font-bold">
+            ✕
+          </button>
+        </div>
+        <div id="savedFavoritesList" class="space-y-3"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Editorial Footer with WHO, IMA, ICMR-NIN Clinical Disclaimer & Institutional Attribution -->
+  <footer class="w-full bg-surface-container-low border-t border-outline-variant py-8 mt-10 no-print hide-in-cook-mode">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-on-surface-variant">
+      <p id="footerDisclaimerText" class="font-body-sm text-xs text-center md:text-left max-w-3xl leading-relaxed">
+        <strong>Clinical &amp; Wellness Alignment:</strong> NutriDawn’s therapeutic meal parameters (such as Low-GI Diabetic Care and Low-Sodium Hypertension Care) are formulated in alignment with general dietary guidelines issued by the <strong>World Health Organization (WHO)</strong>, the <strong>Indian Medical Association (IMA)</strong>, and <strong>ICMR–National Institute of Nutrition (NIN)</strong>. These suggestions support everyday healthy eating and do not replace individualized medical advice from your physician or registered dietitian.
+      </p>
+      <div class="text-center md:text-right shrink-0">
+        <span class="block font-label-sm text-xs font-bold text-primary">Designed &amp; Created by: Dr. Joydip Chandra, BRSC</span>
+        <span class="block font-label-sm text-[11px] text-secondary">NutriDawn • Smart, Simple Breakfasts Tailored to Your Health.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-surface/95 backdrop-blur-xl border-t border-outline-variant shadow-[0_-2px_12px_rgba(53,14,19,0.06)] no-print">
+    <div class="flex justify-around items-center h-16 px-2">
+      <a href="#onboarding-section" class="flex flex-col items-center justify-center text-primary">
+        <span class="text-lg">🍽️</span>
+        <span class="font-label-sm text-[11px] mt-0.5">Studio</span>
+      </a>
+      <button id="openSavedDrawerBtnMobile" type="button" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary">
+        <span class="text-lg">🔖</span>
+        <span class="font-label-sm text-[11px] mt-0.5">Saved</span>
+      </button>
+      <button id="openBasketBtnMobile" type="button" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary">
+        <span class="text-lg">🧺</span>
+        <span class="font-label-sm text-[11px] mt-0.5">Basket</span>
+      </button>
+      <a href="#options-section" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary">
+        <span class="text-lg">✨</span>
+        <span class="font-label-sm text-[11px] mt-0.5">3 Paths</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Toast Notification Pill -->
+  <div id="ndToast" class="hidden fixed bottom-20 lg:bottom-6 right-4 z-50 px-5 py-3 rounded-full bg-on-surface text-surface font-label-md text-xs shadow-xl"></div>
+
+  <!-- Main Modular Entry Point -->
+  <script type="module" src="js/ui-renderer.js"></script>
+</body>
+</html>

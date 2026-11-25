@@ -1,0 +1,111 @@
+/**
+ * NutriDawn — Colorful Shareable Recipe Poster & Print Stylesheet
+ * Styled in Kitchen Editorial Palette with Bengali Juktakkhor Protection
+ * Designed & Created by: Dr. Joydip Chandra, BRSC
+ */
+
+/* Off-screen or modal-ready colorful poster container captured by html2canvas */
+.nd-share-poster {
+  width: 680px;
+  max-width: 100%;
+  background: linear-gradient(145deg, #fff8f7 0%, #ffe9e9 55%, #ffdadb 100%);
+  border: 2px solid #e2bfb8;
+  border-radius: 2rem;
+  padding: 2rem;
+  color: #350e13;
+  box-shadow: 0 18px 40px rgba(53, 14, 19, 0.14);
+  position: relative;
+  overflow: hidden;
+}
+
+.nd-share-poster-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px dashed #e2bfb8;
+}
+
+.nd-share-poster-hero {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.25rem;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e2bfb8;
+  margin-bottom: 1.25rem;
+}
+
+.nd-share-poster-hero img {
+  width: 220px;
+  height: 165px;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.nd-share-macro-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.nd-share-macro-box {
+  background-color: #ffffff;
+  border: 1px solid #e2bfb8;
+  border-radius: 1rem;
+  padding: 0.6rem 0.5rem;
+  text-align: center;
+}
+
+.nd-share-poster-body {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 1rem;
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid #e2bfb8;
+  margin-bottom: 1.25rem;
+}
+
+.nd-share-poster-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: #5a413c;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2bfb8;
+}
+
+/* Protect Bengali Juktakkhor inside html2canvas PNG capture */
+html[lang="bn"] .nd-share-poster,
+html[lang="bn"] .nd-share-poster * {
+  font-family: 'Noto Sans Bengali', sans-serif !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+/* Clean Print Media Rule */
+@media print {
+  header,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    padding: 0 !important;
+  }
+
+  .nd-share-poster {
+    box-shadow: none !important;
+    border: 1px solid #cccccc !important;
+    width: 100% !important;
+  }
+}

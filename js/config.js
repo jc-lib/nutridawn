@@ -20,6 +20,7 @@ export const APP_CONFIG = Object.freeze({
     fallbackGeminiModel: 'gemini-2.5-flash',
     maxPrepMinutes: 15
   }
+});
 
 /**
  * 1. Life Stages (Age Groups) with Baseline Nutritional Priorities
@@ -32,7 +33,7 @@ export const AGE_GROUPS = Object.freeze([
     labelEn: 'Kids (5–12)',
     labelBn: 'শিশু (৫–১২ বছর)',
     baselineNutrientsEn: 'Calcium, Iron, Brain-Healthy Fats & Complete Protein for steady growth and school focus',
-    baselineNutrientsBn: 'বৃদ্ধি ও পড়াশোনার মনোযোগের জন্য ক্যালসিয়াম, আয়রন ও সুষম প্রোটিন',
+    baselineNutrientsBn: 'বৃদ্ধি ও পড়াশোনার মনোযোগের জন্য ক্যালসিয়াম, আয়রন ও সুষম প্রোটিন',
     textureNote: 'Kid-friendly, mild spices, bite-sized and colorful presentation'
   },
   {
@@ -78,7 +79,7 @@ export const AGE_GROUPS = Object.freeze([
 ]);
 
 /**
- * 2. Gender-Specific Micronutrient Modifiers (Applied when no clinical override is active)
+ * 2. Gender-Specific Micronutrient Modifiers
  */
 export const GENDERS = Object.freeze([
   {

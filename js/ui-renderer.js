@@ -1,6 +1,6 @@
 /**
  * NutriDawn — Main Interactive UI Controller
- * Connects Infinite Dynamic Health Quotes, Onboarding, Collapsible Filter Cards,
+ * Connects Infinite Dynamic Health Quotes, Onboarding, Sequential Collapsible Cards,
  * 3 Morning Paths, Pantry Swaps, Unified Morning Grocery Basket + Quick-Commerce Brand Logos,
  * Mise Cooking Mode, Countdown Timer, Bookmarks, and Share Poster Export.
  * Designed & Created by: Dr. Joydip Chandra, BRSC
@@ -72,11 +72,17 @@ const state = {
   lang: LanguageStore.get(),
   profile: ProfileStore.get().profile,
   hasSavedProfile: ProfileStore.get().hasSavedProfile,
+  touchedFilters: {
+    cuisine: false,
+    diet: false,
+    prep: false,
+    condition: false
+  },
   options: [],
   resolvedImages: new Map(),
   activeRecipe: null,
   checkedIngredients: new Set(),
-  basketItems: [], // { key, displayName, quantity, englishSearchQuery, recipeTitle }
+  basketItems: [],
   swapApplied: false,
   cookingMode: false,
   activeStepIndex: 0,
@@ -106,7 +112,7 @@ function showToast(message) {
 }
 
 /**
- * 1. Infinite Dynamic Health Quote Engine (Live Open API + Unseen Local Rotation)
+ * 1. Infinite Dynamic Health Quote Engine
  */
 async function loadDynamicHealthQuote(forceRemote = true) {
   const quoteEl = document.getElementById('dynamicHealthQuoteText');
@@ -207,12 +213,15 @@ function applyLanguageBindings() {
       ? sanitizeBengali('লিঙ্গ ও বয়স বেছে নিন — আমরা প্রয়োজনীয় ভিটামিন, প্রোটিন ও শক্তির ভারসাম্য ঠিক রাখব।')
       : 'Select gender and life stage — we automatically balance essential vitamins, protein, and energy.',
     step2PromptText: isBn
-      ? sanitizeBengali('স্বাদ, রান্নার সময় ও বিশেষ স্বাস্থ্য যত্ন বাছুন')
-      : 'Customize flavors, prep time & wellness care',
+      ? sanitizeBengali('স্বাদ, রান্নার সময় ও বিশেষ ডায়েট বাছুন')
+      : 'Customize flavors, prep time & dietary care',
     step3SubpromptText: isBn
-      ? sanitizeBengali('বিকল্প দেখতে বা পরিবর্তন করতে নিচের যেকোনো কার্ডে ট্যাপ করুন')
-      : 'Tap any card below to select or change options',
-    step3PromptText: isBn ? sanitizeBengali('৪. বিশেষ যত্ন') : '4. Extra Care',
+      ? sanitizeBengali('প্রতিটি কার্ডের "বাছুন" বোতামে চাপ দিয়ে পছন্দ নির্বাচন করুন')
+      : 'Click Select on each card to choose your preference',
+    cardTitleCuisine: isBn ? sanitizeBengali('রন্ধনশৈলী') : 'Cuisine',
+    cardTitleDiet: isBn ? sanitizeBengali('খাদ্যাভ্যাস') : 'Dietary Preference',
+    cardTitlePrep: isBn ? sanitizeBengali('সর্বোচ্চ সময়') : 'Max Kitchen Time',
+    step3PromptText: isBn ? sanitizeBengali('বিশেষ ডায়েট প্রয়োজন') : 'Needs special dietary care',
     privacyNoteText: t(state.lang, 'privacyNote'),
     generateIdeasBtnLabel: t(state.lang, 'generateOptionsBtn'),
     loadingText: isBn
@@ -247,7 +256,7 @@ function applyLanguageBindings() {
 }
 
 /**
- * 3. Render Gentle Onboarding Pill Selectors & Collapsible Card Summaries
+ * 3. Render Gentle Onboarding Pill Selectors & Sequential Collapsible Cards
  */
 function renderOnboardingPills() {
   const isBn = state.lang === 'bn';
@@ -280,14 +289,22 @@ function renderOnboardingPills() {
   const pObj = PREP_TIMES.find((p) => Number(p.id) === Number(state.profile.maxPrepMinutes)) || PREP_TIMES[2];
   const hObj = HEALTH_CONDITIONS.find((h) => h.id === state.profile.healthCondition) || HEALTH_CONDITIONS[0];
 
-  const setSum = (id, obj) => {
+  const syncCardValue = (id, touched, obj) => {
     const el = document.getElementById(id);
-    if (el && obj) el.textContent = isBn ? sanitizeBengali(obj.labelBn) : obj.labelEn;
+    if (!el || !obj) return;
+    if (touched || state.hasSavedProfile) {
+      el.textContent = isBn ? sanitizeBengali(obj.labelBn) : obj.labelEn;
+      el.classList.remove('hidden');
+    } else {
+      el.textContent = '';
+      el.classList.add('hidden');
+    }
   };
-  setSum('summaryCuisineVal', cObj);
-  setSum('summaryDietVal', dObj);
-  setSum('summaryPrepVal', pObj);
-  setSum('summaryConditionVal', hObj);
+
+  syncCardValue('summaryCuisineVal', state.touchedFilters.cuisine, cObj);
+  syncCardValue('summaryDietVal', state.touchedFilters.diet, dObj);
+  syncCardValue('summaryPrepVal', state.touchedFilters.prep, pObj);
+  syncCardValue('summaryConditionVal', state.touchedFilters.condition, hObj);
 
   document.querySelectorAll('.nd-select-cue').forEach((el) => {
     el.textContent = isBn ? sanitizeBengali('বাছুন') : 'Select';
@@ -316,14 +333,29 @@ function updateBaselineNutritionPreview() {
   }
 }
 
-function updateProfileSelection(updates) {
+function advanceSequentialCard(currentCardId, nextCardId) {
+  const currentCard = document.getElementById(currentCardId);
+  if (currentCard) currentCard.removeAttribute('open');
+  if (nextCardId) {
+    const nextCard = document.getElementById(nextCardId);
+    if (nextCard) nextCard.setAttribute('open', '');
+  }
+}
+
+function updateProfileSelection(updates, filterKey = null, currentCardId = null, nextCardId = null) {
   state.profile = ProfileStore.save(updates);
   state.hasSavedProfile = true;
+  if (filterKey && Object.prototype.hasOwnProperty.call(state.touchedFilters, filterKey)) {
+    state.touchedFilters[filterKey] = true;
+  }
   renderOnboardingPills();
+  if (currentCardId) {
+    advanceSequentialCard(currentCardId, nextCardId);
+  }
 }
 
 /**
- * 4. Fetch 3 Morning Options & Hydrate Real Food Photos (Wikimedia / Openverse)
+ * 4. Fetch 3 Morning Options & Hydrate Real Food Photos
  */
 async function handleGenerateOptions(forceRefresh = false) {
   const loadingSec = document.getElementById('loadingSection');
@@ -1104,13 +1136,15 @@ function initApp() {
     if (target.id === 'resetSavedProfileBtn') {
       state.profile = ProfileStore.clear();
       state.hasSavedProfile = false;
+      state.touchedFilters = { cuisine: false, diet: false, prep: false, condition: false };
+      document.querySelectorAll('.nd-filter-details').forEach((el) => el.removeAttribute('open'));
       document.getElementById('returningUserBanner')?.classList.add('hidden');
       renderOnboardingPills();
       showToast('Saved preferences cleared.');
       return;
     }
 
-    // Onboarding Pills
+    // Onboarding Pills (Sequential Expand -> Select -> Collapse -> Open Next Card)
     if (target.dataset.age) {
       updateProfileSelection({ ageGroup: target.dataset.age });
       return;
@@ -1120,19 +1154,39 @@ function initApp() {
       return;
     }
     if (target.dataset.cuisine) {
-      updateProfileSelection({ cuisine: target.dataset.cuisine });
+      updateProfileSelection(
+        { cuisine: target.dataset.cuisine },
+        'cuisine',
+        'cardDetailsCuisine',
+        'cardDetailsDiet'
+      );
       return;
     }
     if (target.dataset.diet) {
-      updateProfileSelection({ dietType: target.dataset.diet });
+      updateProfileSelection(
+        { dietType: target.dataset.diet },
+        'diet',
+        'cardDetailsDiet',
+        'cardDetailsPrep'
+      );
       return;
     }
     if (target.dataset.prep) {
-      updateProfileSelection({ maxPrepMinutes: Number(target.dataset.prep) });
+      updateProfileSelection(
+        { maxPrepMinutes: Number(target.dataset.prep) },
+        'prep',
+        'cardDetailsPrep',
+        'cardDetailsCondition'
+      );
       return;
     }
     if (target.dataset.condition) {
-      updateProfileSelection({ healthCondition: target.dataset.condition });
+      updateProfileSelection(
+        { healthCondition: target.dataset.condition },
+        'condition',
+        'cardDetailsCondition',
+        null
+      );
       return;
     }
 
